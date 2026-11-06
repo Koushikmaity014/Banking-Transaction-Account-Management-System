@@ -1,0 +1,1790 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Dashboard - IITG Bank</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+
+  <style>
+    .bank-dialog-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(15, 35, 60, .55);
+    }
+
+    .bank-dialog {
+      width: min(900px, 100%);
+      max-height: 85vh;
+      overflow-y: auto;
+      background: #fff;
+      color: #142b46;
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .2);
+      font-family: Inter, sans-serif;
+    }
+
+    .bank-dialog-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .bank-dialog-header h2 {
+      font-size: 21px;
+      margin: 0;
+    }
+
+    .bank-dialog-close {
+      border: 1px solid #dbe4ef;
+      background: white;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    .bank-dialog-body {
+      overflow-wrap: anywhere;
+    }
+
+    .bank-dialog-form {
+      display: grid;
+      gap: 16px;
+    }
+
+    .bank-dialog-form label {
+      display: grid;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .bank-dialog-form input,
+    .bank-dialog-form select {
+      width: 100%;
+      min-height: 46px;
+      box-sizing: border-box;
+      padding: 12px;
+      border: 1px solid #d5deeb;
+      border-radius: 8px;
+      background: white;
+      color: #142b46;
+      font: inherit;
+    }
+
+    .bank-dialog-submit {
+      width: 100%;
+      min-height: 48px;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 16px;
+      background: #2563eb;
+      color: white;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .bank-dialog-submit:hover {
+      background: #1d4ed8;
+    }
+
+    .bank-dialog-submit:disabled {
+      opacity: .6;
+      cursor: wait;
+    }
+
+    .bank-dialog-message {
+      padding: 14px;
+      border-radius: 8px;
+      background: #f1f5f9;
+      line-height: 1.6;
+    }
+
+    .bank-dialog-message.error {
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    .bank-dialog-message.success {
+      background: #f0fdf4;
+      color: #166534;
+    }
+
+    .bank-dialog-table-wrap {
+      overflow-x: auto;
+    }
+
+    .bank-dialog-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .bank-dialog-table th,
+    .bank-dialog-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #e5eaf1;
+      white-space: nowrap;
+    }
+
+    .bank-dialog-table th {
+      background: #f1f5f9;
+      text-transform: capitalize;
+    }
+
+    .bank-account-number {
+      overflow-wrap: anywhere;
+    }
+
+    [data-bank-action] {
+      cursor: pointer;
+    }
+
+    .bank-inline-error {
+      color: #b91c1c;
+      padding: 12px;
+    }
+
+    
+    .profile-section {
+      margin: 20px 0;
+    }
+
+    .profile-section h3 {
+      margin: 0 0 14px;
+      color: #142b46;
+      font-size: 17px;
+    }
+
+    .profile-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .profile-field {
+      min-width: 0;
+      padding: 14px;
+      border: 1px solid #e1e8f0;
+      border-radius: 10px;
+      background: #f8fafc;
+      overflow-wrap: anywhere;
+    }
+
+    .profile-label {
+      display: block;
+      margin-bottom: 6px;
+      color: #66758a;
+      font-size: 12px;
+    }
+
+    .profile-value {
+      display: block;
+      color: #142b46;
+      font-weight: 600;
+      overflow-wrap: anywhere;
+    }
+
+    .profile-account {
+      margin-top: 14px;
+      padding: 18px;
+      border: 1px solid #dce5ef;
+      border-radius: 12px;
+    }
+
+    .profile-account h4 {
+      margin: 0 0 14px;
+      font-size: 15px;
+    }
+
+    .profile-loading {
+      padding: 16px;
+      border-radius: 8px;
+      background: #f1f5f9;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 600px) {
+      .profile-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+
+    @media (max-width: 600px) {
+      .bank-dialog {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<div class="app-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <div class="sidebar-logo">
+          <i class="fa-solid fa-building-columns"></i>
+        </div>
+        <div>
+          <div class="sidebar-brand-name">IITG Bank</div>
+          <div style="font-size:.7rem;color:#94A3B8;">Retail NetBanking</div>
+        </div>
+      </div>
+
+      <button type="button" class="sidebar-close-btn"
+              id="sidebar-close-btn" aria-label="Close sidebar">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-title">OVERVIEW</div>
+
+      <a href="./dashboard.html" class="nav-link active">
+        <i class="fa-solid fa-chart-pie"></i>
+        <span>Dashboard</span>
+      </a>
+
+      <div class="nav-section-title">BANKING</div>
+
+      <a href="#accounts-section" class="nav-link"
+         data-bank-action="accounts">
+        <i class="fa-solid fa-wallet"></i>
+        <span>My Accounts</span>
+      </a>
+
+      <a href="#transactions-section" class="nav-link"
+         data-bank-action="transactions">
+        <i class="fa-solid fa-list-check"></i>
+        <span>Transactions</span>
+      </a>
+
+      <a href="#transfer" class="nav-link"
+         data-bank-action="transfer">
+        <i class="fa-solid fa-money-bill-transfer"></i>
+        <span>Fund Transfer</span>
+      </a>
+
+      <a href="#loans-section" class="nav-link"
+         data-bank-action="loans">
+        <i class="fa-solid fa-hand-holding-dollar"></i>
+        <span>Loans</span>
+      </a>
+
+      <a href="#statements" class="nav-link"
+         data-bank-action="statements">
+        <i class="fa-solid fa-file-invoice"></i>
+        <span>Statements</span>
+      </a>
+
+      <div class="nav-section-title">SETTINGS &amp; HELP</div>
+
+      <a href="#profile" class="nav-link"
+         data-bank-action="profile">
+        <i class="fa-solid fa-circle-user"></i>
+        <span>Profile</span>
+      </a>
+
+      <a href="#support" class="nav-link"
+         data-bank-action="support">
+        <i class="fa-solid fa-headset"></i>
+        <span>Support</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="#" class="nav-link logout-link" id="sidebar-logout-btn">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        <span>Sign Out</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-wrapper">
+
+    <header class="topbar">
+      <div class="topbar-left">
+        <button type="button" class="mobile-menu-btn"
+                id="sidebar-toggle-btn" aria-label="Open menu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <div class="topbar-greeting-box">
+          <h2 class="topbar-greeting" id="user-greeting">
+            Welcome, Customer
+          </h2>
+          <span class="topbar-last-login" id="user-last-login">
+            Last login
+          </span>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <button type="button" class="notification-bell-btn"
+                data-bank-action="notifications"
+                aria-label="Notifications">
+          <i class="fa-solid fa-bell"></i>
+          <span class="notification-badge"></span>
+        </button>
+
+        <span class="role-badge role-customer" id="user-role-badge">
+          Customer
+        </span>
+
+        <div class="user-profile-widget">
+          <div class="user-avatar" id="user-avatar">C</div>
+
+          <button type="button" class="topbar-logout-btn" id="logout-btn">
+            <i class="fa-solid fa-power-off"></i>
+            <span>Logout</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="dashboard-content">
+
+      <div id="dashboard-notice" hidden></div>
+
+      <div id="loading-container" class="page-loader">
+        <div class="page-spinner"></div>
+        <p>Loading your banking information...</p>
+      </div>
+
+      <div id="content-container" style="display:none;">
+
+        <!-- SUMMARY -->
+        <section class="metrics-grid" aria-label="Financial summary">
+
+          <div class="metric-card">
+            <div class="metric-icon-box metric-icon-blue">
+              <i class="fa-solid fa-indian-rupee-sign"></i>
+            </div>
+            <div class="metric-info">
+              <span class="metric-label">Total Balance</span>
+              <span class="metric-value" id="stat-total-balance">₹0.00</span>
+              <span class="metric-sub">Across your accounts</span>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon-box metric-icon-teal">
+              <i class="fa-solid fa-wallet"></i>
+            </div>
+            <div class="metric-info">
+              <span class="metric-label">My Accounts</span>
+              <span class="metric-value" id="stat-num-accounts">0</span>
+              <span class="metric-sub">Your accounts</span>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon-box metric-icon-purple">
+              <i class="fa-solid fa-file-contract"></i>
+            </div>
+            <div class="metric-info">
+              <span class="metric-label">Active Loans</span>
+              <span class="metric-value" id="stat-active-loans">0</span>
+              <span class="metric-sub">Your loan accounts</span>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon-box metric-icon-amber">
+              <i class="fa-solid fa-calendar-check"></i>
+            </div>
+            <div class="metric-info">
+              <span class="metric-label">Next EMI</span>
+              <span class="metric-value" id="stat-next-emi">₹0.00</span>
+              <span class="metric-sub" id="stat-emi-due-date">
+                EMI information
+              </span>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- QUICK ACTIONS -->
+        <section style="margin-bottom:2rem;">
+          <div class="section-header">
+            <h3 class="section-title">
+              <i class="fa-solid fa-bolt" style="color:#2563EB;"></i>
+              Quick Banking Actions
+            </h3>
+
+            <button type="button" class="section-action-link"
+                    data-bank-action="services">
+              View All Services <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+
+          <div class="quick-actions-grid">
+
+            <button type="button" class="action-card-btn"
+                    data-bank-action="transfer">
+              <div class="action-icon-circle">
+                <i class="fa-solid fa-paper-plane"></i>
+              </div>
+              <span class="action-label">Transfer Money</span>
+            </button>
+
+            <button type="button" class="action-card-btn"
+                    data-bank-action="pay-emi">
+              <div class="action-icon-circle">
+                <i class="fa-solid fa-hand-holding-dollar"></i>
+              </div>
+              <span class="action-label">Pay EMI</span>
+            </button>
+
+            <button type="button" class="action-card-btn"
+                    data-bank-action="statements">
+              <div class="action-icon-circle">
+                <i class="fa-solid fa-receipt"></i>
+              </div>
+              <span class="action-label">View Statement</span>
+            </button>
+
+          </div>
+        </section>
+
+        <!-- ACCOUNTS -->
+        <section style="margin-bottom:2rem;" id="accounts-section">
+          <div class="section-header">
+            <h3 class="section-title">
+              <i class="fa-solid fa-credit-card" style="color:#2563EB;"></i>
+              My Accounts
+            </h3>
+          </div>
+          <div class="accounts-grid" id="accounts-container"></div>
+        </section>
+
+        <!-- LOANS -->
+        <section class="card" style="margin-bottom:2rem;" id="loans-section">
+          <div class="card-header-row">
+            <h3 class="section-title" style="font-size:1rem;">
+              <i class="fa-solid fa-file-invoice-dollar"
+                 style="color:#2563EB;"></i>
+              My Loans
+            </h3>
+          </div>
+          <div class="loans-grid" id="loans-container"></div>
+        </section>
+
+        <!-- TRANSACTIONS -->
+        <section class="card" id="transactions-section">
+          <div class="card-header-row">
+            <div>
+              <h3 class="section-title" style="font-size:1.05rem;">
+                <i class="fa-solid fa-clock-rotate-left"
+                   style="color:#2563EB;"></i>
+                Recent Transactions
+              </h3>
+              <p style="font-size:.78rem;color:var(--text-muted);margin-top:4px;">
+                Recent entries for your accounts
+              </p>
+            </div>
+
+            <button type="button" class="btn-table-action"
+                    data-bank-action="transactions">
+              View Transactions
+            </button>
+          </div>
+
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Date &amp; Time</th>
+                  <th>Account</th>
+                  <th>Transaction ID</th>
+                  <th>Type</th>
+                  <th>Amount (₹)</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="transactions-tbody">
+                <tr>
+                  <td colspan="6" style="text-align:center;padding:2rem;">
+                    Loading transactions...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- PROJECT SCRIPTS -->
+<script src="../js/mockData.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/ui.js"></script>
+
+<script>
+(() => {
+  "use strict";
+
+  const auth = window.auth;
+  const api = window.api;
+
+  if (!auth || !api) {
+    console.error("Authentication/API scripts are missing.");
+    return;
+  }
+
+  const user = auth.requireAuth("customer");
+  if (!user) return;
+
+  const $ = id => document.getElementById(id);
+
+  let actionInProgress = false;
+
+  function field(object, ...names) {
+    if (!object || typeof object !== "object") return "";
+
+    for (const name of names) {
+      if (object[name] !== undefined && object[name] !== null) {
+        return object[name];
+      }
+
+      const actualKey = Object.keys(object).find(
+        key => key.toLowerCase() === name.toLowerCase()
+      );
+
+      if (actualKey && object[actualKey] !== null) {
+        return object[actualKey];
+      }
+    }
+
+    return "";
+  }
+
+  function rows(result) {
+    if (!result || result.success !== true) {
+      throw new Error(result?.message || "The backend request failed.");
+    }
+
+    const data = result.data;
+
+    if (Array.isArray(data)) return data;
+
+    if (data && typeof data === "object") {
+      for (const key of ["items", "records", "results", "rows"]) {
+        if (Array.isArray(data[key])) return data[key];
+      }
+
+      if (Array.isArray(data.data)) return data.data;
+      if (!Object.keys(data).length) return [];
+
+      return [data];
+    }
+
+    return [];
+  }
+
+  function text(value) {
+    return value === null || value === undefined || value === ""
+      ? "—"
+      : String(value);
+  }
+
+  
+  function escapeHtml(value) {
+    return String(value ?? "—").replace(/[&<>"']/g, character => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    })[character]);
+  }
+
+
+  function currency(value) {
+    const amount = Number(value);
+
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      minimumFractionDigits: 2
+    }).format(Number.isFinite(amount) ? amount : 0);
+  }
+
+  function accountNo(account) {
+    return String(field(account, "account_no", "Account_No", "accountNo"));
+  }
+
+  function getLoanId(loan) {
+    return String(field(loan, "loan_id", "Loan_ID", "loanId"));
+  }
+
+  function formatDate(value) {
+    if (!value) return "—";
+
+    const date = new Date(value);
+
+    return Number.isNaN(date.getTime())
+      ? String(value)
+      : date.toLocaleString("en-IN", {
+          dateStyle: "medium",
+          timeStyle: "short"
+        });
+  }
+
+  function maskAccount(value) {
+    const number = String(value || "");
+    return number.length > 4 ? "••••" + number.slice(-4) : number || "—";
+  }
+
+  function openDialog(title) {
+    document.getElementById("bank-action-dialog")?.remove();
+
+    const overlay = document.createElement("div");
+    overlay.id = "bank-action-dialog";
+    overlay.className = "bank-dialog-overlay";
+
+    const panel = document.createElement("section");
+    panel.className = "bank-dialog";
+    panel.setAttribute("role", "dialog");
+    panel.setAttribute("aria-modal", "true");
+    panel.setAttribute("aria-label", title);
+
+    const header = document.createElement("div");
+    header.className = "bank-dialog-header";
+
+    const heading = document.createElement("h2");
+    heading.textContent = title;
+
+    const close = document.createElement("button");
+    close.type = "button";
+    close.className = "bank-dialog-close";
+    close.textContent = "×";
+    close.setAttribute("aria-label", "Close dialog");
+
+    const body = document.createElement("div");
+    body.className = "bank-dialog-body";
+    body.id = "bank-action-dialog-body";
+
+    header.append(heading, close);
+    panel.append(header, body);
+    overlay.append(panel);
+    document.body.append(overlay);
+
+    function removeDialog() {
+      overlay.remove();
+    }
+
+    close.addEventListener("click", removeDialog);
+
+    overlay.addEventListener("click", event => {
+      if (event.target === overlay) removeDialog();
+    });
+
+    return body;
+  }
+
+  function messageDialog(title, message, type = "info") {
+    const body = openDialog(title);
+    const paragraph = document.createElement("p");
+
+    paragraph.className = "bank-dialog-message " + type;
+    paragraph.textContent = message;
+
+    body.append(paragraph);
+  }
+
+  function tableDialog(title, data) {
+    const body = openDialog(title);
+
+    if (!data.length) {
+      body.textContent = "No records were found.";
+      return;
+    }
+
+    const columns = [...new Set(data.flatMap(row => Object.keys(row)))];
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "bank-dialog-table-wrap";
+
+    const table = document.createElement("table");
+    table.className = "bank-dialog-table";
+
+    const thead = document.createElement("thead");
+    const headerRow = document.createElement("tr");
+
+    columns.forEach(column => {
+      const th = document.createElement("th");
+      th.textContent = column.replaceAll("_", " ");
+      headerRow.append(th);
+    });
+
+    thead.append(headerRow);
+
+    const tbody = document.createElement("tbody");
+
+    data.forEach(row => {
+      const tr = document.createElement("tr");
+
+      columns.forEach(column => {
+        const td = document.createElement("td");
+        const value = row[column];
+
+        td.textContent =
+          value === null || value === undefined
+            ? "—"
+            : typeof value === "object"
+              ? JSON.stringify(value)
+              : String(value);
+
+        tr.append(td);
+      });
+
+      tbody.append(tr);
+    });
+
+    table.append(thead, tbody);
+    wrapper.append(table);
+    body.append(wrapper);
+  }
+
+  async function getAccounts() {
+    return rows(await api.getAccounts());
+  }
+
+  
+function downloadStatementCsv(transactions, accountNumber) {
+  if (!Array.isArray(transactions) || transactions.length === 0) {
+    messageDialog(
+      "Download Statement",
+      "There are no transactions available to export.",
+      "error"
+    );
+    return;
+  }
+
+  const columns = [
+    ["transaction_id", "Transaction ID"],
+    ["transaction_type", "Transaction Type"],
+    ["amount", "Amount (INR)"],
+    ["transaction_date_time", "Transaction Date Time"],
+    ["balance_after", "Balance After (INR)"],
+    ["channel", "Channel"],
+    ["status", "Status"]
+  ];
+
+  function csvEscape(value) {
+    const textValue = value === null || value === undefined
+      ? ""
+      : String(value);
+
+    return '"' + textValue.replace(/"/g, '""') + '"';
+  }
+
+  const csvRows = [
+    columns.map(([, heading]) => csvEscape(heading)).join(",")
+  ];
+
+  for (const transaction of transactions) {
+    csvRows.push(
+      columns.map(([key]) =>
+        csvEscape(field(transaction, key))
+      ).join(",")
+    );
+  }
+
+  // BOM helps spreadsheet applications display CSV text correctly.
+  const csvContent = "\uFEFF" + csvRows.join("\r\n");
+
+  const blob = new Blob([csvContent], {
+    type: "text/csv;charset=utf-8;"
+  });
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  const safeAccount = String(accountNumber || "account")
+    .replace(/[^a-zA-Z0-9_-]/g, "_");
+
+  link.href = url;
+  link.download = `statement_${safeAccount}_${new Date()
+    .toISOString()
+    .slice(0, 10)}.csv`;
+
+  document.body.append(link);
+  link.click();
+  link.remove();
+
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+
+  async function getLoans() {
+    return rows(await api.getLoans());
+  }
+
+  /*
+   * FIXED ACCOUNT SELECTION:
+   * The form submit event is explicitly handled, so Continue works.
+   * Closing the dialog cancels the selection cleanly.
+   */
+  async function selectAccount(accounts, title) {
+    if (!accounts || accounts.length === 0) {
+      throw new Error("No accounts are available for this operation.");
+    }
+
+    const body = openDialog(title);
+    const overlay = body.closest(".bank-dialog-overlay");
+
+    const form = document.createElement("form");
+    form.className = "bank-dialog-form";
+
+    const label = document.createElement("label");
+    label.textContent = "Select account";
+
+    const select = document.createElement("select");
+    select.required = true;
+
+    accounts.forEach((account, index) => {
+      const option = document.createElement("option");
+      option.value = String(index);
+
+      option.textContent =
+        accountNo(account) +
+        " — Balance: " +
+        currency(field(account, "current_balance", "Current_Balance"));
+
+      select.append(option);
+    });
+
+    label.append(select);
+
+    const submit = document.createElement("button");
+    submit.type = "submit";
+    submit.className = "bank-dialog-submit";
+    submit.textContent = "Continue";
+
+    form.append(label, submit);
+    body.append(form);
+
+    return new Promise((resolve, reject) => {
+      let completed = false;
+
+      function finish(value) {
+        if (completed) return;
+        completed = true;
+        resolve(value);
+      }
+
+      function cancel() {
+        finish(null);
+      }
+
+      const closeButton = overlay.querySelector(".bank-dialog-close");
+
+      closeButton.addEventListener("click", cancel, { once: true });
+
+      overlay.addEventListener("click", event => {
+        if (event.target === overlay) cancel();
+      });
+
+      form.addEventListener("submit", event => {
+        event.preventDefault();
+
+        const selectedIndex = Number(select.value);
+        const selectedAccount = accounts[selectedIndex];
+
+        if (!selectedAccount) {
+          reject(new Error("Please select a valid account."));
+          overlay.remove();
+          return;
+        }
+
+        overlay.remove();
+        finish(selectedAccount);
+      });
+
+      select.focus();
+    });
+  }
+
+  async function showAccounts() {
+    const accounts = await getAccounts();
+    tableDialog("My Accounts", accounts);
+  }
+
+  
+async function showCustomerProfile() {
+  const body = openDialog("Customer Profile");
+  body.innerHTML =
+    '<p class="profile-loading">Loading your profile...</p>';
+
+  try {
+    if (typeof api.getCustomerProfile !== "function") {
+      throw new Error(
+        "Add getCustomerProfile() to frontend/js/api.js first."
+      );
+    }
+
+    const result = await api.getCustomerProfile();
+
+    if (!result || result.success !== true) {
+      throw new Error(
+        result?.message || "Unable to load your profile."
+      );
+    }
+
+    const data = result.data || {};
+    const customer = data.customer;
+    const accounts = Array.isArray(data.accounts)
+      ? data.accounts
+      : [];
+
+    if (!customer) {
+      throw new Error("Customer details were not returned.");
+    }
+
+    const fieldCard = (label, value) => `
+      <div class="profile-field">
+        <span class="profile-label">${escapeHtml(label)}</span>
+        <span class="profile-value">${escapeHtml(
+          value === null || value === undefined || value === ""
+            ? "Not available"
+            : value
+        )}</span>
+      </div>
+    `;
+
+    const accountCards = accounts.length
+      ? accounts.map(account => `
+          <section class="profile-account">
+            <h4>Account ${escapeHtml(account.account_no)}</h4>
+            <div class="profile-grid">
+              ${fieldCard("Account Number", account.account_no)}
+              ${fieldCard(
+                "Account Type",
+                account.account_type_name || account.account_type_id
+              )}
+              ${fieldCard("IFSC", account.ifsc)}
+              ${fieldCard("Nominee", account.nominee)}
+              ${fieldCard("Opening Date", account.opening_date)}
+              ${fieldCard("Account Status", account.status)}
+              ${fieldCard(
+                "Current Balance",
+                currency(account.current_balance)
+              )}
+            </div>
+          </section>
+        `).join("")
+      : '<p class="bank-dialog-message">No accounts are linked to your profile yet.</p>';
+
+    body.innerHTML = `
+      <section class="profile-section">
+        <h3>Personal Information</h3>
+        <div class="profile-grid">
+          ${fieldCard("Customer ID (CIF)", customer.cif)}
+          ${fieldCard("First Name", customer.first_name)}
+          ${fieldCard("Last Name", customer.last_name)}
+          ${fieldCard("Date of Birth", customer.dob)}
+          ${fieldCard("Gender", customer.gender)}
+          ${fieldCard("Contact Number", customer.contact)}
+          ${fieldCard("PAN", customer.pan)}
+          ${fieldCard(
+            "Aadhaar Number",
+            customer.aadhar_no
+              ? "XXXX XXXX " + String(customer.aadhar_no).slice(-4)
+              : "Not available"
+          )}
+          ${fieldCard("Address", customer.address)}
+          ${fieldCard("Customer Status", customer.status)}
+        </div>
+      </section>
+
+      <section class="profile-section">
+        <h3>My Bank Accounts (${accounts.length})</h3>
+        ${accountCards}
+      </section>
+    `;
+
+  } catch (error) {
+    console.error("Profile loading failed:", error);
+
+    body.replaceChildren();
+
+    const message = document.createElement("p");
+    message.className = "bank-dialog-message error";
+    message.textContent =
+      error.message || "Unable to load your profile.";
+
+    body.append(message);
+  }
+}
+
+
+  
+async function showTransactions(selectedAccount = null) {
+  let account = selectedAccount;
+
+  if (!account) {
+    const accounts = await getAccounts();
+    account = await selectAccount(accounts, "Choose an Account");
+
+    if (!account) return;
+  }
+
+  const number = accountNo(account);
+
+  if (!number || number === "undefined") {
+    throw new Error("The selected account number is unavailable.");
+  }
+
+  const result = await api.getTransactions(number, 50, 0);
+  const transactions = rows(result);
+
+  tableDialog("Account Transactions", transactions);
+
+  const body = document.getElementById("bank-action-dialog-body");
+  if (!body) return;
+
+  const downloadButton = document.createElement("button");
+  downloadButton.type = "button";
+  downloadButton.className = "bank-dialog-submit";
+  downloadButton.style.marginBottom = "16px";
+  downloadButton.innerHTML =
+    '<i class="fa-solid fa-file-csv"></i> Download Statement (CSV)';
+
+  downloadButton.addEventListener("click", () => {
+    downloadStatementCsv(transactions, number);
+  });
+
+  body.prepend(downloadButton);
+}
+
+  async function showLoans() {
+    const loans = await getLoans();
+    tableDialog("My Loans", loans);
+  }
+
+  /*
+   * FIXED TRANSFER FLOW:
+   * Account selection -> transfer form -> backend transfer API.
+   */
+  async function transferMoney() {
+    const accounts = await getAccounts();
+
+    const source = await selectAccount(accounts, "Transfer Money");
+
+    if (!source) return;
+
+    const sourceAccountNo = accountNo(source);
+
+    if (!sourceAccountNo || sourceAccountNo === "undefined") {
+      throw new Error("Could not identify the selected source account.");
+    }
+
+    const body = openDialog("Transfer Money");
+
+    const form = document.createElement("form");
+    form.className = "bank-dialog-form";
+
+    const sourceInfo = document.createElement("p");
+    sourceInfo.textContent =
+      "From account: " + sourceAccountNo +
+      " | Available balance: " +
+      currency(field(source, "current_balance", "Current_Balance"));
+
+    form.append(sourceInfo);
+
+    function addField(labelText, type) {
+      const label = document.createElement("label");
+      label.textContent = labelText;
+
+      const input = document.createElement("input");
+      input.type = type;
+      input.required = true;
+
+      if (type === "number") {
+        input.min = "0.01";
+        input.step = "0.01";
+      }
+
+      label.append(input);
+      form.append(label);
+
+      return input;
+    }
+
+    const recipient = addField("Recipient account number", "text");
+    recipient.maxLength = 20;
+    recipient.autocomplete = "off";
+
+    const amount = addField("Transfer amount (₹)", "number");
+
+    const modeLabel = document.createElement("label");
+    modeLabel.textContent = "Transfer mode";
+
+    const mode = document.createElement("select");
+
+    [
+      ["Internal_Transfer", "Internal Transfer"],
+      ["NEFT", "NEFT"],
+      ["RTGS", "RTGS"],
+      ["IMPS", "IMPS"]
+    ].forEach(([value, labelText]) => {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = labelText;
+      mode.append(option);
+    });
+
+    modeLabel.append(mode);
+    form.append(modeLabel);
+
+    const submit = document.createElement("button");
+    submit.type = "submit";
+    submit.className = "bank-dialog-submit";
+    submit.textContent = "Submit Transfer";
+
+    form.append(submit);
+    body.append(form);
+
+    form.addEventListener("submit", async event => {
+      event.preventDefault();
+
+      const destination = recipient.value.trim();
+      const transferAmount = Number(amount.value);
+
+      if (!destination || destination === sourceAccountNo) {
+        messageDialog(
+          "Invalid Recipient",
+          "Enter a valid recipient account number different from the source account.",
+          "error"
+        );
+        return;
+      }
+
+      if (!Number.isFinite(transferAmount) || transferAmount <= 0) {
+        messageDialog(
+          "Invalid Amount",
+          "Enter an amount greater than zero.",
+          "error"
+        );
+        return;
+      }
+
+      submit.disabled = true;
+      submit.textContent = "Processing...";
+
+      try {
+        const result = await api.transfer(
+          sourceAccountNo,
+          destination,
+          transferAmount,
+          mode.value
+        );
+
+        if (!result || result.success !== true) {
+          throw new Error(
+            result?.message || "The transfer could not be completed."
+          );
+        }
+
+        document.getElementById("bank-action-dialog")?.remove();
+
+        messageDialog(
+          "Transfer Result",
+          result.message || "The backend accepted the transfer request.",
+          "success"
+        );
+
+        await refreshDashboard();
+
+      } catch (error) {
+        submit.disabled = false;
+        submit.textContent = "Submit Transfer";
+
+        messageDialog("Transfer Failed", error.message, "error");
+      }
+    });
+  }
+
+  async function payEMI() {
+    const loans = await getLoans();
+
+    if (!loans.length) {
+      throw new Error("No loans were found for your account.");
+    }
+
+    const body = openDialog("Pay Loan EMI");
+    const form = document.createElement("form");
+    form.className = "bank-dialog-form";
+
+    const loanLabel = document.createElement("label");
+    loanLabel.textContent = "Select loan";
+
+    const loanSelect = document.createElement("select");
+    loanSelect.required = true;
+
+    loans.forEach((loan, index) => {
+      const option = document.createElement("option");
+      option.value = String(index);
+      option.textContent =
+        getLoanId(loan) +
+        " — EMI: " +
+        currency(field(loan, "emi_amount", "EMI_Amount"));
+
+      loanSelect.append(option);
+    });
+
+    loanLabel.append(loanSelect);
+
+    function addAmountField(labelText) {
+      const label = document.createElement("label");
+      label.textContent = labelText;
+
+      const input = document.createElement("input");
+      input.type = "number";
+      input.min = "0";
+      input.step = "0.01";
+      input.required = true;
+      input.value = "0";
+
+      label.append(input);
+      form.append(label);
+
+      return input;
+    }
+
+    const principal = addAmountField("Principal paid (₹)");
+    const interest = addAmountField("Interest paid (₹)");
+
+    const methodLabel = document.createElement("label");
+    methodLabel.textContent = "Payment method";
+
+    const method = document.createElement("select");
+
+
+  [
+    ["Internal_Transfer", "Online Banking"],
+    ["UPI", "UPI"],
+    ["NEFT", "NEFT"],
+    ["RTGS", "RTGS"],
+    ["IMPS", "IMPS"],
+    ["Cheque", "Cheque"]
+  ].forEach(([value, labelText]) => {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = labelText;
+    method.append(option);
+  });
+
+
+    methodLabel.append(method);
+
+    const submit = document.createElement("button");
+    submit.type = "submit";
+    submit.className = "bank-dialog-submit";
+    submit.textContent = "Submit Payment";
+
+    form.append(loanLabel, methodLabel, submit);
+    body.append(form);
+
+    form.insertBefore(principal.parentElement, methodLabel);
+    form.insertBefore(interest.parentElement, methodLabel);
+
+    form.addEventListener("submit", async event => {
+      event.preventDefault();
+
+      const loan = loans[Number(loanSelect.value)];
+      const principalPaid = Number(principal.value);
+      const interestPaid = Number(interest.value);
+
+      if (
+        !loan ||
+        !Number.isFinite(principalPaid) ||
+        !Number.isFinite(interestPaid) ||
+        principalPaid < 0 ||
+        interestPaid < 0 ||
+        principalPaid + interestPaid <= 0
+      ) {
+        messageDialog(
+          "Invalid Payment",
+          "Select a loan and enter valid payment amounts.",
+          "error"
+        );
+        return;
+      }
+
+      submit.disabled = true;
+      submit.textContent = "Processing...";
+
+      try {
+        const result = await api.payLoan(getLoanId(loan), {
+          principal_paid: principalPaid,
+          interest_paid: interestPaid,
+          payment_method: method.value
+        });
+
+        if (!result || result.success !== true) {
+          throw new Error(result?.message || "The payment failed.");
+        }
+
+        document.getElementById("bank-action-dialog")?.remove();
+
+        messageDialog(
+          "Payment Result",
+          result.message || "The backend accepted the payment request.",
+          "success"
+        );
+
+        await refreshDashboard();
+
+      } catch (error) {
+        submit.disabled = false;
+        submit.textContent = "Submit Payment";
+
+        messageDialog("Payment Failed", error.message, "error");
+      }
+    });
+  }
+
+  async function showStatements() {
+    const accounts = await getAccounts();
+    const account = await selectAccount(accounts, "View Statement");
+
+    if (!account) return;
+
+    // Displays transaction history for the selected account.
+    // A downloadable PDF requires a dedicated backend endpoint.
+    await showTransactions(account);
+  }
+
+  function renderAccounts(accounts) {
+    const container = $("accounts-container");
+    container.replaceChildren();
+
+    if (!accounts.length) {
+      container.textContent = "No accounts were found.";
+      return;
+    }
+
+    accounts.forEach(account => {
+      const card = document.createElement("article");
+      card.className = "account-card";
+
+      const heading = document.createElement("h4");
+      heading.textContent = text(
+        field(account, "type_name", "account_type_name", "Type_Name")
+      );
+
+      const label = document.createElement("p");
+      label.textContent = "Available Balance";
+
+      const balance = document.createElement("strong");
+      balance.textContent = currency(
+        field(account, "current_balance", "Current_Balance")
+      );
+
+      const number = document.createElement("p");
+      number.className = "bank-account-number";
+      number.textContent = maskAccount(accountNo(account));
+
+      const status = document.createElement("p");
+      status.textContent =
+        "Status: " + text(field(account, "status", "Status"));
+
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "btn-table-action";
+      button.textContent = "View Transactions";
+
+      button.addEventListener("click", async () => {
+        try {
+          await showTransactions(account);
+        } catch (error) {
+          messageDialog("Transactions", error.message, "error");
+        }
+      });
+
+      card.append(heading, label, balance, number, status, button);
+      container.append(card);
+    });
+  }
+
+  function renderLoans(loans) {
+    const container = $("loans-container");
+    container.replaceChildren();
+
+    if (!loans.length) {
+      container.textContent = "No loans were found.";
+      return;
+    }
+
+    loans.forEach(loan => {
+      const card = document.createElement("article");
+      card.className = "loan-mini-card";
+
+      const heading = document.createElement("h4");
+      heading.textContent = text(
+        field(loan, "loan_type_name", "Loan_Type_Name", "loan_type_id")
+      );
+
+      const id = document.createElement("p");
+      id.textContent = "Loan ID: " + text(getLoanId(loan));
+
+      const emi = document.createElement("p");
+      emi.textContent =
+        "EMI: " + currency(field(loan, "emi_amount", "EMI_Amount"));
+
+      const remaining = document.createElement("p");
+      remaining.textContent =
+        "Remaining: " +
+        currency(field(loan, "remaining_amount", "Remaining_Amount"));
+
+      const status = document.createElement("p");
+      status.textContent =
+        "Status: " + text(field(loan, "loan_status", "Loan_Status"));
+
+      card.append(heading, id, emi, remaining, status);
+      container.append(card);
+    });
+  }
+
+  function renderTransactions(transactions) {
+    const tbody = $("transactions-tbody");
+    tbody.replaceChildren();
+
+    if (!transactions.length) {
+      const tr = document.createElement("tr");
+      const td = document.createElement("td");
+
+      td.colSpan = 6;
+      td.textContent = "No recent transactions found.";
+      td.style.textAlign = "center";
+      td.style.padding = "24px";
+
+      tr.append(td);
+      tbody.append(tr);
+      return;
+    }
+
+    transactions.forEach(transaction => {
+      const tr = document.createElement("tr");
+
+      const values = [
+        formatDate(field(
+          transaction,
+          "transaction_date_time",
+          "Transaction_Date_Time"
+        )),
+        maskAccount(field(transaction, "account_no", "Account_No")),
+        field(transaction, "transaction_id", "Transaction_ID"),
+        field(transaction, "transaction_type", "Transaction_Type"),
+        currency(field(transaction, "amount", "Amount")),
+        field(transaction, "status", "Status")
+      ];
+
+      values.forEach(value => {
+        const td = document.createElement("td");
+        td.textContent = text(value);
+        tr.append(td);
+      });
+
+      tbody.append(tr);
+    });
+  }
+
+  async function refreshDashboard() {
+    $("loading-container").style.display = "block";
+    $("content-container").style.display = "none";
+
+    try {
+      const [accountResult, loanResult] = await Promise.all([
+        api.getAccounts(),
+        api.getLoans()
+      ]);
+
+      const accounts = rows(accountResult);
+      const loans = rows(loanResult);
+      const transactions = [];
+
+      for (const account of accounts) {
+        const number = accountNo(account);
+
+        if (!number || number === "undefined") continue;
+
+        const result = await api.getTransactions(number, 10, 0);
+        transactions.push(...rows(result));
+      }
+
+      transactions.sort((a, b) => {
+        const dateA = new Date(field(
+          a, "transaction_date_time", "Transaction_Date_Time"
+        )).getTime() || 0;
+
+        const dateB = new Date(field(
+          b, "transaction_date_time", "Transaction_Date_Time"
+        )).getTime() || 0;
+
+        return dateB - dateA;
+      });
+
+      const recentTransactions = transactions.slice(0, 10);
+
+      const totalBalance = accounts.reduce((total, account) => {
+        return total + Number(
+          field(account, "current_balance", "Current_Balance") || 0
+        );
+      }, 0);
+
+      const activeLoans = loans.filter(loan =>
+        String(field(loan, "loan_status", "Loan_Status")).toLowerCase() === "active"
+      );
+
+      $("stat-total-balance").textContent = currency(totalBalance);
+      $("stat-num-accounts").textContent = String(accounts.length);
+      $("stat-active-loans").textContent = String(activeLoans.length);
+
+      const nextLoan = activeLoans.find(loan =>
+        Number(field(loan, "emi_amount", "EMI_Amount")) > 0
+      );
+
+      $("stat-next-emi").textContent = nextLoan
+        ? currency(field(nextLoan, "emi_amount", "EMI_Amount"))
+        : currency(0);
+
+      $("stat-emi-due-date").textContent = nextLoan
+        ? "EMI amount"
+        : "No active EMI found";
+
+      renderAccounts(accounts);
+      renderLoans(loans);
+      renderTransactions(recentTransactions);
+
+      $("loading-container").style.display = "none";
+      $("content-container").style.display = "block";
+
+    } catch (error) {
+      console.error("Dashboard loading failed:", error);
+
+      $("loading-container").style.display = "block";
+      $("loading-container").textContent =
+        "Unable to load your banking data: " + error.message;
+    }
+  }
+
+  async function handleAction(action) {
+    switch (action) {
+      case "accounts":
+        await showAccounts();
+        break;
+
+      case "transactions":
+        await showTransactions();
+        break;
+
+      case "transfer":
+        await transferMoney();
+        break;
+
+      case "loans":
+        await showLoans();
+        break;
+
+      case "pay-emi":
+        await payEMI();
+        break;
+
+      case "statements":
+        await showStatements();
+        break;
+
+      case "services":
+        await showAccounts();
+        break;
+
+      case "profile":
+        await showCustomerProfile();
+        break;
+
+      case "support": {
+        const body = openDialog("Customer Support");
+
+        body.innerHTML = `
+          <p class="bank-dialog-message">
+            Need help with your banking services? Contact our support team.
+          </p>
+
+          <div class="profile-grid" style="margin-top:16px;">
+            <div class="profile-field">
+              <span class="profile-label">Support Contact</span>
+              <span class="profile-value">Moyukh Mondal</span>
+            </div>
+
+            <div class="profile-field">
+              <span class="profile-label">Email Address</span>
+              <a class="profile-value"
+                href="mailto:moyukh@iitg.ac.in">
+                moyukh@iitg.ac.in
+              </a>
+            </div>
+
+            <div class="profile-field">
+              <span class="profile-label">Phone Number</span>
+              <a class="profile-value" href="tel:8240027236">
+                8240027236
+              </a>
+            </div>
+          </div>
+
+          <div class="modal-actions" style="margin-top:20px;">
+            <button type="button"
+                    class="bank-dialog-submit"
+                    data-close-modal>
+              Close
+            </button>
+          </div>
+        `;
+
+        body.querySelector("[data-close-modal]")?.addEventListener(
+          "click",
+          () => document.getElementById("bank-action-dialog")?.remove()
+        );
+
+        break;
+      }
+
+      case "notifications":
+        messageDialog(
+          "Notifications",
+          "A customer-notifications API is required for this service."
+        );
+        break;
+
+      default:
+        throw new Error("This banking action is not configured.");
+    }
+  }
+
+  /*
+   * Event delegation connects all sidebar links and quick-action buttons.
+   * The data-bank-action value determines the operation.
+   */
+  document.addEventListener("click", async event => {
+    const trigger = event.target.closest("[data-bank-action]");
+
+    if (!trigger) return;
+
+    event.preventDefault();
+
+    if (actionInProgress) return;
+
+    const action = trigger.dataset.bankAction;
+
+    if (!action) return;
+
+    if (action === "accounts") {
+      $("accounts-section").scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    } else if (action === "transactions") {
+      $("transactions-section").scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    } else if (action === "loans") {
+      $("loans-section").scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+
+    $("sidebar")?.classList.remove("open");
+
+    actionInProgress = true;
+
+    try {
+      await handleAction(action);
+    } catch (error) {
+      console.error("Banking action failed:", error);
+
+      messageDialog(
+        "Unable to Complete Request",
+        error.message || "Please try again.",
+        "error"
+      );
+    } finally {
+      actionInProgress = false;
+    }
+  });
+
+  $("logout-btn")?.addEventListener("click", () => auth.logout());
+
+  $("sidebar-logout-btn")?.addEventListener("click", event => {
+    event.preventDefault();
+    auth.logout();
+  });
+
+  $("sidebar-toggle-btn")?.addEventListener("click", () => {
+    $("sidebar")?.classList.toggle("open");
+  });
+
+  $("sidebar-close-btn")?.addEventListener("click", () => {
+    $("sidebar")?.classList.remove("open");
+  });
+
+  const displayName = field(
+    user,
+    "first_name",
+    "First_Name",
+    "name",
+    "username",
+    "Username"
+  );
+
+  if (displayName) {
+    $("user-greeting").textContent = "Welcome, " + displayName;
+    $("user-avatar").textContent =
+      String(displayName).charAt(0).toUpperCase();
+  }
+
+  if (window.ui?.initTopBar) {
+    try {
+      window.ui.initTopBar(user);
+    } catch (error) {
+      console.warn("Top bar initialization failed:", error);
+    }
+  }
+
+  refreshDashboard();
+
+})();
+</script>
+
+</body>
+</html>
