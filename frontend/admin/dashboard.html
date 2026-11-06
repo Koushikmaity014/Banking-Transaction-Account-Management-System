@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IITG Bank | Admin Dashboard</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Correct relative paths -->
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, Arial, sans-serif;
+        }
+
+        .app-layout {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        .sidebar {
+            flex: 0 0 260px;
+            width: 260px;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            background: #0d2745;
+            color: #dbe7f5;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .sidebar-header {
+            padding: 20px 16px;
+            border-bottom: 1px solid rgba(255,255,255,.12);
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-logo {
+            flex: 0 0 42px;
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            color: white;
+        }
+
+        .sidebar-brand-name {
+            font-weight: 700;
+            color: white;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 12px;
+        }
+
+        .nav-section-title {
+            margin: 20px 10px 8px;
+            color: #94a3b8;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .sidebar-nav .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 4px;
+            border-radius: 8px;
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 13px;
+            transition: background .2s, color .2s;
+        }
+
+        .sidebar-nav .nav-link i {
+            flex: 0 0 20px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-nav .nav-link:hover {
+            background: #1e3a5f;
+            color: white;
+        }
+
+        .sidebar-nav .nav-link.active {
+            background: #7c3aed;
+            color: white;
+        }
+
+        .sidebar-footer {
+            padding: 12px;
+            border-top: 1px solid rgba(255,255,255,.12);
+        }
+
+        .main-wrapper {
+            flex: 1 1 0;
+            width: 0;
+            min-width: 0;
+            background: #f5f7fb;
+        }
+
+        .topbar {
+            min-height: 72px;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .topbar-left,
+        .topbar-right,
+        .user-profile-widget {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .topbar-greeting {
+            margin: 0;
+            font-size: 19px;
+            color: #172b45;
+        }
+
+        .topbar-last-login {
+            display: block;
+            margin-top: 5px;
+            color: #718198;
+            font-size: 12px;
+        }
+
+        .dashboard-content {
+            width: 100%;
+            min-width: 0;
+            padding: 24px;
+            overflow-x: hidden;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+            width: 100%;
+        }
+
+        .metric-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 0;
+            padding: 20px;
+            background: white;
+            border: 1px solid #e1e8f0;
+            border-radius: 14px;
+            box-shadow: 0 2px 5px rgba(15,23,42,.04);
+        }
+
+        .metric-icon-box {
+            flex: 0 0 48px;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            font-size: 19px;
+        }
+
+        .metric-icon-purple {
+            background: #f3e8ff;
+            color: #7c3aed;
+        }
+
+        .metric-icon-teal {
+            background: #ccfbf1;
+            color: #0d9488;
+        }
+
+        .metric-icon-blue {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .metric-icon-emerald {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .metric-icon-amber {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .metric-info {
+            flex: 1 1 0;
+            min-width: 0;
+        }
+
+        .metric-label,
+        .metric-value,
+        .metric-sub {
+            display: block;
+            max-width: 100%;
+            overflow-wrap: anywhere;
+        }
+
+        .metric-label {
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            line-height: 1.5;
+        }
+
+        .metric-value {
+            margin-top: 7px;
+            color: #10233f;
+            font-size: clamp(19px, 2vw, 27px);
+            font-weight: 700;
+            line-height: 1.35;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .metric-sub {
+            margin-top: 5px;
+            color: #8492a6;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .card {
+            min-width: 0;
+            margin-top: 22px;
+            padding: 20px;
+            background: white;
+            border: 1px solid #e1e8f0;
+            border-radius: 14px;
+            box-shadow: 0 2px 5px rgba(15,23,42,.04);
+        }
+
+        .card-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .section-title {
+            margin: 0;
+            color: #172b45;
+            font-size: 17px;
+        }
+
+        .section-description {
+            margin: 7px 0 0;
+            color: #718198;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .btn-table-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 9px 12px;
+            border: 1px solid #dbe3ef;
+            border-radius: 8px;
+            background: white;
+            color: #4f46e5;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-table-action:hover {
+            background: #f5f3ff;
+        }
+
+        .table-container {
+            width: 100%;
+            min-width: 0;
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            min-width: 650px;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .data-table th {
+            padding: 13px 14px;
+            background: #f8fafc;
+            color: #64748b;
+            text-align: left;
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: .4px;
+            white-space: nowrap;
+        }
+
+        .data-table td {
+            padding: 13px 14px;
+            color: #43556c;
+            border-bottom: 1px solid #edf1f6;
+            white-space: nowrap;
+        }
+
+        .data-table tbody tr:hover {
+            background: #fafbff;
+        }
+
+        .badge,
+        .role-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 10px;
+        }
+
+        .badge-neutral {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .page-loader {
+            padding: 40px 15px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        .page-spinner {
+            width: 35px;
+            height: 35px;
+            margin: 0 auto 15px;
+            border: 4px solid #e5e7eb;
+            border-top-color: #7c3aed;
+            border-radius: 50%;
+            animation: spin .8s linear infinite;
+        }
+
+        .charts-grid-2 {
+            display: none !important;
+        }
+
+        .mobile-menu-btn,
+        .sidebar-close-btn {
+            display: none;
+            border: 0;
+            background: transparent;
+            color: #334155;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 1100px) {
+            .metrics-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .dashboard-content {
+                padding: 18px;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .sidebar {
+                position: fixed;
+                inset: 0 auto 0 0;
+                z-index: 1000;
+                width: 260px;
+                min-width: 260px;
+                transform: translateX(-100%);
+                transition: transform .25s ease;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .mobile-menu-btn,
+            .sidebar-close-btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .sidebar-close-btn {
+                margin-left: auto;
+                color: white;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar {
+                padding: 12px;
+                align-items: flex-start;
+            }
+
+            .topbar-right {
+                gap: 7px;
+                flex-wrap: wrap;
+                justify-content: flex-end;
+            }
+
+            .dashboard-content {
+                padding: 12px;
+            }
+
+            .card {
+                padding: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="app-layout">
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-brand">
+                <div class="sidebar-logo"
+                     style="background:linear-gradient(135deg,#7C3AED,#A78BFA)">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+
+                <div>
+                    <div class="sidebar-brand-name">IITG Core</div>
+                    <div style="font-size:11px;color:#94A3B8;margin-top:4px">
+                        Central Admin Console
+                    </div>
+                </div>
+
+                <button type="button" class="sidebar-close-btn"
+                        id="sidebar-close-btn" aria-label="Close sidebar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section-title">Administration</div>
+
+            <a href="./dashboard.html" class="nav-link active" data-dashboard-link>
+                <i class="fa-solid fa-gauge-high"></i><span>Dashboard</span>
+            </a>
+
+            <a href="./admin-records.html#branches" class="nav-link">
+                <i class="fa-solid fa-network-wired"></i><span>Branches</span>
+            </a>
+
+            <a href="./admin-records.html#employees" class="nav-link">
+                <i class="fa-solid fa-id-card-clip"></i><span>Employees</span>
+            </a>
+
+            <a href="./admin-records.html#customers" class="nav-link">
+                <i class="fa-solid fa-users"></i><span>Customers</span>
+            </a>
+
+            <a href="./admin-records.html#accounts" class="nav-link">
+                <i class="fa-solid fa-book"></i><span>Accounts</span>
+            </a>
+
+            <a href="./admin-records.html#account_types" class="nav-link">
+                <i class="fa-solid fa-layer-group"></i><span>Account Types</span>
+            </a>
+
+            <a href="./admin-records.html#loan_types" class="nav-link">
+                <i class="fa-solid fa-percent"></i><span>Loan Types</span>
+            </a>
+
+            <div class="nav-section-title">Transactions &amp; Loans</div>
+
+            <a href="./admin-records.html#transactions" class="nav-link">
+                <i class="fa-solid fa-list-check"></i><span>Transactions</span>
+            </a>
+
+            <a href="./admin-records.html#fund_transfers" class="nav-link">
+                <i class="fa-solid fa-money-bill-transfer"></i><span>Fund Transfers</span>
+            </a>
+
+            <a href="./admin-records.html#loans" class="nav-link">
+                <i class="fa-solid fa-file-invoice-dollar"></i><span>Loans</span>
+            </a>
+
+            <a href="./admin-records.html#loan_payments" class="nav-link">
+                <i class="fa-solid fa-money-check-dollar"></i><span>Loan Payments</span>
+            </a>
+
+            <div class="nav-section-title">System &amp; Audit</div>
+
+            <a href="./admin-records.html#user_logins" class="nav-link">
+                <i class="fa-solid fa-key"></i><span>User Logins</span>
+            </a>
+
+            <a href="./admin-records.html#audit_logs" class="nav-link">
+                <i class="fa-solid fa-file-shield"></i><span>Audit Logs</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="#" class="nav-link logout-link" id="sidebar-logout-btn">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                <span>Sign Out</span>
+            </a>
+        </div>
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="topbar">
+            <div class="topbar-left">
+                <button type="button" class="mobile-menu-btn"
+                        id="sidebar-toggle-btn" aria-label="Open sidebar">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
+                <div>
+                    <h2 class="topbar-greeting" id="user-greeting">
+                        Welcome, Administrator
+                    </h2>
+                    <span class="topbar-last-login" id="user-last-login">
+                        Banking Management System
+                    </span>
+                </div>
+            </div>
+
+            <div class="topbar-right">
+                <span class="role-badge role-admin">ADMIN</span>
+
+                <div class="user-profile-widget">
+                    <div class="user-avatar" id="user-avatar"
+                         style="background:#7C3AED;color:white;padding:10px;border-radius:50%">
+                        A
+                    </div>
+
+                    <button type="button" class="topbar-logout-btn" id="logout-btn">
+                        <i class="fa-solid fa-power-off"></i>
+                        <span>Logout</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="dashboard-content">
+            <div id="loading-container" class="page-loader">
+                <div class="page-spinner"></div>
+                <p>Loading banking dashboard...</p>
+            </div>
+
+            <div id="dashboard-error" hidden
+                 style="padding:16px;margin-bottom:18px;background:#fff1f0;color:#b42318;border-radius:8px">
+            </div>
+
+            <div id="content-container" style="display:none">
+
+                <section class="metrics-grid" aria-label="Banking metrics">
+                    <div class="metric-card">
+                        <div class="metric-icon-box metric-icon-purple">
+                            <i class="fa-solid fa-building-columns"></i>
+                        </div>
+                        <div class="metric-info">
+                            <span class="metric-label">Total Branches</span>
+                            <span class="metric-value" id="stat-total-branches">0</span>
+                            <span class="metric-sub">Registered branches</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon-box metric-icon-teal">
+                            <i class="fa-solid fa-user-tie"></i>
+                        </div>
+                        <div class="metric-info">
+                            <span class="metric-label">Staff Personnel</span>
+                            <span class="metric-value" id="stat-total-employees">0</span>
+                            <span class="metric-sub">Registered employees</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon-box metric-icon-blue">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <div class="metric-info">
+                            <span class="metric-label">Total Customers</span>
+                            <span class="metric-value" id="stat-total-customers">0</span>
+                            <span class="metric-sub">Registered customers</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon-box metric-icon-emerald">
+                            <i class="fa-solid fa-vault"></i>
+                        </div>
+                        <div class="metric-info">
+                            <span class="metric-label">Total Deposits</span>
+                            <span class="metric-value" id="stat-total-deposits">₹0</span>
+                            <span class="metric-sub">Total account balances</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon-box metric-icon-amber">
+                            <i class="fa-solid fa-file-contract"></i>
+                        </div>
+                        <div class="metric-info">
+                            <span class="metric-label">Active Loans</span>
+                            <span class="metric-value" id="stat-active-loans">0</span>
+                            <span class="metric-sub">Active loan accounts</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon-box metric-icon-purple">
+                            <i class="fa-solid fa-hourglass-start"></i>
+                        </div>
+                        <div class="metric-info">
+                            <span class="metric-label">Pending Approval</span>
+                            <span class="metric-value" id="stat-pending-loans">0</span>
+                            <span class="metric-sub">Loans awaiting approval</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card">
+                    <div class="card-header-row">
+                        <div>
+                            <h3 class="section-title">Loan Portfolio Overview</h3>
+                            <p class="section-description">Loan status summary</p>
+                        </div>
+                        <a href="./admin-records.html#loans" class="btn-table-action">
+                            Manage Loans
+                        </a>
+                    </div>
+
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-info">
+                                <span class="metric-label">Active</span>
+                                <span class="metric-value" id="loan-count-active">0</span>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-info">
+                                <span class="metric-label">Pending</span>
+                                <span class="metric-value" id="loan-count-pending">0</span>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-info">
+                                <span class="metric-label">Closed</span>
+                                <span class="metric-value" id="loan-count-closed">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card">
+                    <div class="card-header-row">
+                        <div>
+                            <h3 class="section-title">Branch Network</h3>
+                            <p class="section-description">Registered branches and deposit holdings</p>
+                        </div>
+                        <a href="./admin-records.html#branches" class="btn-table-action">
+                            Manage Branches
+                        </a>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Branch Name</th>
+                                    <th>IFSC Code</th>
+                                    <th>City</th>
+                                    <th>Manager</th>
+                                    <th>Accounts</th>
+                                    <th>Total Deposits</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="branch-overview-tbody"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="card">
+                    <div class="card-header-row">
+                        <div>
+                            <h3 class="section-title">User Authentication Audit</h3>
+                            <p class="section-description">Recent login records</p>
+                        </div>
+                        <a href="./admin-records.html#user_logins" class="btn-table-action">
+                            Manage User Logins
+                        </a>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Login ID</th>
+                                    <th>Username</th>
+                                    <th>Role</th>
+                                    <th>Last Login</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="user-logins-tbody"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="card">
+                    <div class="card-header-row">
+                        <div>
+                            <h3 class="section-title">Recent Transactions</h3>
+                            <p class="section-description">Latest processed transactions</p>
+                        </div>
+                        <a href="./admin-records.html#transactions" class="btn-table-action">
+                            View Transactions
+                        </a>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Account Number</th>
+                                    <th>Type</th>
+                                    <th>Channel</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-txns-tbody"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Shared JS files: paths are relative to frontend/admin/ -->
+<script src="../js/mockData.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/ui.js"></script>
+
+<script>
+"use strict";
+
+document.addEventListener("DOMContentLoaded", async () => {
+    const sidebar = document.getElementById("sidebar");
+
+    document.getElementById("sidebar-toggle-btn")?.addEventListener("click", () => {
+        sidebar.classList.add("open");
+    });
+
+    document.getElementById("sidebar-close-btn")?.addEventListener("click", () => {
+        sidebar.classList.remove("open");
+    });
+
+    document.querySelectorAll(".sidebar-nav .nav-link").forEach(link => {
+        link.addEventListener("click", () => sidebar.classList.remove("open"));
+    });
+
+    const logout = () => {
+        if (window.auth && typeof window.auth.logout === "function") {
+            window.auth.logout();
+        } else {
+            window.location.href = "../index.html";
+        }
+    };
+
+    document.getElementById("logout-btn")?.addEventListener("click", logout);
+
+    document.getElementById("sidebar-logout-btn")?.addEventListener("click", event => {
+        event.preventDefault();
+        logout();
+    });
+
+    function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, c => ({
+            "&": "&amp;", "<": "&lt;", ">": "&gt;",
+            '"': "&quot;", "'": "&#39;"
+        }[c]));
+    }
+
+    function setText(id, value) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value ?? 0;
+    }
+
+    function currency(value) {
+        return window.ui?.formatCurrency
+            ? window.ui.formatCurrency(Number(value || 0), true)
+            : new Intl.NumberFormat("en-IN", {
+                style: "currency",
+                currency: "INR",
+                maximumFractionDigits: 2
+            }).format(Number(value || 0));
+    }
+
+    function formatDate(value) {
+        if (!value) return "—";
+        return window.ui?.formatDate
+            ? window.ui.formatDate(value, true)
+            : String(value);
+    }
+
+    function statusBadge(value) {
+        return window.ui?.getStatusBadge
+            ? window.ui.getStatusBadge(value)
+            : `<span class="badge badge-neutral">${escapeHtml(value || "Unknown")}</span>`;
+    }
+
+    try {
+        let currentUser = null;
+
+        if (window.auth?.requireAuth) {
+            currentUser = window.auth.requireAuth("admin");
+            if (!currentUser) return;
+        }
+
+        if (currentUser && window.ui?.initTopBar) {
+            window.ui.initTopBar(currentUser);
+        }
+
+        if (!window.api?.getAdminDashboardData) {
+            throw new Error("getAdminDashboardData() is not available in ../js/api.js");
+        }
+
+        const response = await window.api.getAdminDashboardData();
+
+        if (!response || response.success === false || !response.data) {
+            throw new Error(response?.message || "The dashboard API returned no data.");
+        }
+
+        const data = response.data;
+        const stats = data.stats || {};
+        const loanSummary = data.loanStatusSummary || {};
+
+        setText("stat-total-branches", stats.totalBranches);
+        setText("stat-total-employees", stats.totalEmployees);
+        setText("stat-total-customers", stats.totalCustomers);
+        setText("stat-total-deposits", currency(stats.totalDeposits));
+        setText("stat-active-loans", stats.activeLoans);
+        setText("stat-pending-loans", stats.pendingLoans);
+
+        setText("loan-count-active", loanSummary.Active);
+        setText("loan-count-pending", loanSummary.Pending);
+        setText("loan-count-closed", loanSummary.Closed);
+
+        const branchBody = document.getElementById("branch-overview-tbody");
+        branchBody.innerHTML = "";
+
+        (data.branchOverview || []).forEach(branch => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td><strong>${escapeHtml(branch.Branch_Name)}</strong></td>
+                <td><code>${escapeHtml(branch.IFSC)}</code></td>
+                <td>${escapeHtml(branch.City)}</td>
+                <td>${escapeHtml(branch.Manager_Name)}</td>
+                <td>${escapeHtml(branch.Total_Accounts ?? 0)}</td>
+                <td>${escapeHtml(currency(branch.Total_Deposits))}</td>
+                <td>${statusBadge(branch.Status)}</td>
+            `;
+            branchBody.appendChild(row);
+        });
+
+        if (!(data.branchOverview || []).length) {
+            branchBody.innerHTML = '<tr><td colspan="7">No branch records available.</td></tr>';
+        }
+
+        const loginBody = document.getElementById("user-logins-tbody");
+        loginBody.innerHTML = "";
+
+        (data.recentLogins || []).forEach(user => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td><code>${escapeHtml(user.Login_ID)}</code></td>
+                <td><strong>${escapeHtml(user.Username)}</strong></td>
+                <td>${escapeHtml(user.Role)}</td>
+                <td>${escapeHtml(formatDate(user.Last_Login))}</td>
+                <td>${statusBadge(user.Account_Status)}</td>
+            `;
+            loginBody.appendChild(row);
+        });
+
+        if (!(data.recentLogins || []).length) {
+            loginBody.innerHTML = '<tr><td colspan="5">No login records available.</td></tr>';
+        }
+
+        const transactionBody = document.getElementById("admin-txns-tbody");
+        transactionBody.innerHTML = "";
+
+        (data.recentTransactions || []).forEach(tx => {
+            const accountNumber = window.ui?.maskAccountNumber
+                ? window.ui.maskAccountNumber(tx.Account_No)
+                : tx.Account_No;
+
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td><code>${escapeHtml(tx.Transaction_ID)}</code></td>
+                <td><code>${escapeHtml(accountNumber)}</code></td>
+                <td>${escapeHtml(tx.Transaction_Type)}</td>
+                <td>${escapeHtml(tx.Channel)}</td>
+                <td>${escapeHtml(formatDate(tx.Transaction_Date_Time))}</td>
+                <td>${escapeHtml(currency(tx.Amount))}</td>
+                <td>${statusBadge(tx.Status)}</td>
+            `;
+            transactionBody.appendChild(row);
+        });
+
+        if (!(data.recentTransactions || []).length) {
+            transactionBody.innerHTML = '<tr><td colspan="7">No transactions available.</td></tr>';
+        }
+
+        document.getElementById("loading-container").style.display = "none";
+        document.getElementById("content-container").style.display = "block";
+
+    } catch (error) {
+        console.error("Dashboard error:", error);
+
+        document.getElementById("loading-container").style.display = "none";
+
+        const errorBox = document.getElementById("dashboard-error");
+        errorBox.hidden = false;
+        errorBox.textContent = "Unable to load dashboard: " + error.message;
+    }
+});
+</script>
+</body>
+</html>

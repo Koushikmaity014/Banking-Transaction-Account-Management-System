@@ -1,0 +1,1193 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>IITG Bank | Admin Database Management</title>
+
+    <meta name="theme-color" content="#0c2340">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    >
+
+    <!-- Shared project stylesheet -->
+    <link rel="stylesheet" href="../css/style.css">
+
+    <!-- Admin records stylesheet -->
+    <link rel="stylesheet" href="./admin-records.css">
+
+    <!-- Page-specific corrections -->
+    <style>
+        :root {
+            --bank-navy: #0c2340;
+            --bank-navy-light: #173657;
+            --bank-purple: #7c3aed;
+            --bank-text: #172b45;
+            --bank-muted: #718198;
+            --bank-border: #dfe7f1;
+            --bank-background: #f4f7fb;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            width: 100%;
+            min-height: 100%;
+            font-family: "Inter", Arial, sans-serif;
+        }
+
+        body {
+            color: var(--bank-text);
+            background: var(--bank-background);
+            overflow-x: hidden;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
+        /* Application layout */
+
+        .app-shell {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: stretch;
+            width: 100%;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        /* Sidebar */
+
+        .sidebar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex !important;
+            flex: 0 0 260px !important;
+            flex-direction: column;
+            width: 260px !important;
+            min-width: 260px !important;
+            max-width: 260px !important;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            overflow-y: auto;
+            background: var(--bank-navy);
+            color: #dbe7f5;
+            scrollbar-width: thin;
+            scrollbar-color: #385371 var(--bank-navy);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+            padding: 21px 16px;
+            border-bottom: 1px solid rgba(255,255,255,.1);
+        }
+
+        .brand-mark {
+            display: flex;
+            flex: 0 0 44px;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #7c3aed, #a78bfa);
+            color: white;
+            font-size: 21px;
+        }
+
+        .brand-copy {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .brand-copy strong {
+            display: block;
+            color: white;
+            font-size: 17px;
+            font-weight: 800;
+            letter-spacing: -.4px;
+            white-space: nowrap;
+        }
+
+        .brand-copy strong span {
+            color: #c4b5fd;
+        }
+
+        .brand-copy small {
+            display: block;
+            margin-top: 4px;
+            color: #9eb1c9;
+            font-size: 11px;
+        }
+
+        .nav-label {
+            margin: 21px 20px 9px;
+            color: #91a9c5;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.1px;
+        }
+
+        .dashboard-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-height: 43px;
+            margin: 0 12px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            color: #d0dced;
+            font-size: 13px;
+            text-decoration: none;
+        }
+
+        .dashboard-link:hover {
+            background: var(--bank-navy-light);
+            color: white;
+        }
+
+        .dashboard-link.active {
+            background: #294568;
+            color: white;
+            box-shadow: inset 3px 0 #a78bfa;
+        }
+
+        #table-navigation {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            width: 100%;
+            padding: 0 12px;
+        }
+
+        #table-navigation .nav-section-title {
+            margin: 21px 10px 9px;
+            color: #91a9c5;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.1px;
+            text-transform: uppercase;
+        }
+
+        #table-navigation .nav-item {
+            display: flex !important;
+            align-items: center;
+            gap: 12px;
+            width: 100% !important;
+            min-height: 43px;
+            margin: 0;
+            padding: 10px 12px;
+            border-radius: 8px;
+            background: transparent;
+            color: #d0dced;
+            font-size: 13px;
+            line-height: 1.5;
+            text-decoration: none !important;
+            transition: background .18s ease, color .18s ease;
+        }
+
+        #table-navigation .nav-item:hover {
+            background: var(--bank-navy-light);
+            color: white;
+        }
+
+        #table-navigation .nav-item.active {
+            background: #294568;
+            color: white;
+            box-shadow: inset 3px 0 #a78bfa;
+        }
+
+        #table-navigation .nav-icon {
+            display: inline-flex;
+            flex: 0 0 22px;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            font-size: 15px;
+        }
+
+        #table-navigation .nav-item > span:last-child {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .sidebar-bottom {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: auto;
+            padding: 15px 16px;
+            border-top: 1px solid rgba(255,255,255,.1);
+            color: #a9bbd0;
+            font-size: 11px;
+        }
+
+        .connection-dot {
+            flex: 0 0 8px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #94a3b8;
+        }
+
+        .connection-dot.online {
+            background: #34d399;
+        }
+
+        .connection-dot.offline {
+            background: #f87171;
+        }
+
+        .signout {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            margin-top: 5px;
+            padding: 10px 12px;
+            border: 1px solid rgba(255,255,255,.13);
+            border-radius: 8px;
+            background: transparent;
+            color: #dbe7f5;
+            font-size: 12px;
+        }
+
+        .signout:hover {
+            background: var(--bank-navy-light);
+        }
+
+        /* Main content */
+
+        .main-area {
+            display: flex !important;
+            flex: 1 1 0% !important;
+            flex-direction: column;
+            width: 0 !important;
+            min-width: 0 !important;
+            max-width: 100%;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            background: var(--bank-background);
+        }
+
+        .topbar {
+            position: relative;
+            z-index: 5;
+            display: flex;
+            flex: 0 0 auto;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            width: 100%;
+            min-width: 0;
+            min-height: 76px;
+            margin: 0;
+            padding: 15px 27px;
+            border-bottom: 1px solid var(--bank-border);
+            background: white;
+        }
+
+        .breadcrumbs {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 9px;
+            min-width: 0;
+            color: var(--bank-muted);
+            font-size: 12px;
+        }
+
+        .breadcrumbs strong {
+            color: var(--bank-text);
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .role-pill {
+            padding: 8px 13px;
+            border: 1px solid #ddd6fe;
+            border-radius: 20px;
+            background: #f5f3ff;
+            color: var(--bank-purple);
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .avatar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bank-purple);
+            color: white;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .content {
+            flex: 1 1 auto;
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
+            margin: 0;
+            padding: 28px;
+        }
+
+        .page-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 18px;
+            width: 100%;
+            min-width: 0;
+            margin-bottom: 25px;
+        }
+
+        .page-heading > div {
+            min-width: 0;
+        }
+
+        .eyebrow {
+            margin: 0 0 7px;
+            color: #64748b;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+        }
+
+        .page-heading h1 {
+            margin: 0;
+            color: var(--bank-text);
+            font-size: 30px;
+            font-weight: 800;
+            line-height: 1.3;
+            letter-spacing: -.7px;
+        }
+
+        #page-description {
+            margin: 9px 0 0;
+            color: var(--bank-muted);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* Buttons */
+
+        .primary-button,
+        .secondary-button,
+        .icon-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 41px;
+            padding: 10px 14px;
+            border: 1px solid var(--bank-border);
+            border-radius: 9px;
+            background: white;
+            color: var(--bank-text);
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background .18s ease;
+        }
+
+        .primary-button {
+            border-color: var(--bank-purple);
+            background: var(--bank-purple);
+            color: white;
+        }
+
+        .primary-button:hover {
+            background: #6d28d9;
+        }
+
+        .secondary-button:hover,
+        .icon-button:hover {
+            background: #f1f5f9;
+        }
+
+        .icon-button {
+            width: 40px;
+            min-width: 40px;
+            padding: 8px;
+        }
+
+        .mobile-menu,
+        .mobile-close {
+            display: none;
+        }
+
+        /* Summary */
+
+        .summary-row {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+            width: 100%;
+            min-width: 0;
+            margin-bottom: 22px;
+        }
+
+        .summary-card {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+            min-width: 0;
+            padding: 19px;
+            border: 1px solid var(--bank-border);
+            border-radius: 13px;
+            background: white;
+            box-shadow: 0 2px 5px rgba(15,23,42,.025);
+        }
+
+        .summary-card > span {
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        .summary-card strong {
+            display: block;
+            max-width: 100%;
+            color: var(--bank-text);
+            font-size: 23px;
+            font-weight: 800;
+            line-height: 1.4;
+            overflow-wrap: anywhere;
+        }
+
+        .summary-card small {
+            color: var(--bank-muted);
+            font-size: 11px;
+        }
+
+        /* Data card */
+
+        .data-card {
+            display: block;
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
+            margin: 0;
+            padding: 21px;
+            overflow: hidden;
+            border: 1px solid var(--bank-border);
+            border-radius: 13px;
+            background: white;
+            box-shadow: 0 2px 8px rgba(15,23,42,.035);
+        }
+
+        .toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px;
+            width: 100%;
+            min-width: 0;
+            margin-bottom: 19px;
+        }
+
+        .search-wrap {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            width: min(365px, 100%);
+            min-width: 0;
+        }
+
+        .search-wrap > span {
+            color: #64748b;
+            font-size: 20px;
+        }
+
+        #search-input {
+            width: 100%;
+            min-width: 0;
+            min-height: 44px;
+            padding: 11px 13px;
+            border: 1px solid #d9e2ef;
+            border-radius: 9px;
+            background: white;
+            color: var(--bank-text);
+            outline: none;
+        }
+
+        #search-input:focus {
+            border-color: var(--bank-purple);
+            box-shadow: 0 0 0 3px rgba(124,58,237,.1);
+        }
+
+        .toolbar-actions {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 9px;
+        }
+
+        .table-meta,
+        .table-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            width: 100%;
+            min-width: 0;
+            color: var(--bank-muted);
+            font-size: 12px;
+        }
+
+        .table-meta {
+            margin-bottom: 13px;
+        }
+
+        .table-footer {
+            margin-top: 14px;
+        }
+
+        /* Crucial: the table scrolls inside its own container. */
+
+        .table-scroll {
+            display: block;
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
+            overflow-x: auto !important;
+            overflow-y: hidden;
+            overscroll-behavior-x: contain;
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 #f1f5f9;
+        }
+
+        .table-scroll > table {
+            width: 100%;
+            min-width: 1000px;
+            max-width: none;
+            margin: 0;
+            border-collapse: separate;
+            border-spacing: 0;
+            table-layout: auto;
+            background: white;
+            color: var(--bank-text);
+            font-size: 12px;
+        }
+
+        .table-scroll th {
+            padding: 14px 12px;
+            border-bottom: 1px solid var(--bank-border);
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: .4px;
+            text-align: left;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .table-scroll td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #edf1f6;
+            color: #334155;
+            text-align: left;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        .table-scroll tbody tr:hover {
+            background: #f8faff;
+        }
+
+        .table-scroll tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .empty-cell {
+            padding: 32px !important;
+            color: var(--bank-muted) !important;
+            text-align: center !important;
+        }
+
+        .footnote {
+            margin: 17px 2px 0;
+            color: var(--bank-muted);
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        /* Notifications */
+
+        .notice {
+            width: 100%;
+            margin-bottom: 18px;
+            padding: 13px 15px;
+            border: 1px solid var(--bank-border);
+            border-radius: 9px;
+            overflow-wrap: anywhere;
+        }
+
+        .notice.error {
+            background: #fef2f2;
+            border-color: #fecaca;
+            color: #b91c1c;
+        }
+
+        .notice.success {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+            color: #166534;
+        }
+
+        /* Record editor */
+
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+            background: rgba(15,23,42,.55);
+        }
+
+        .modal-backdrop[hidden] {
+            display: none !important;
+        }
+
+        .modal {
+            width: 100%;
+            max-width: 680px;
+            max-height: calc(100vh - 40px);
+            padding: 23px;
+            overflow-y: auto;
+            border: 1px solid var(--bank-border);
+            border-radius: 14px;
+            background: white;
+            box-shadow: 0 20px 60px rgba(15,23,42,.2);
+        }
+
+        .modal-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .modal-heading h2 {
+            margin: 0;
+            font-size: 21px;
+        }
+
+        .modal-help {
+            margin: 12px 0 20px;
+            color: var(--bank-muted);
+            font-size: 12px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0,1fr));
+            gap: 16px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            min-width: 0;
+        }
+
+        .field label {
+            color: #475569;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .field input,
+        .field select,
+        .field textarea {
+            width: 100%;
+            min-width: 0;
+            padding: 11px 12px;
+            border: 1px solid #d9e2ef;
+            border-radius: 8px;
+            background: white;
+            color: var(--bank-text);
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
+        .form-error {
+            margin-top: 13px;
+            padding: 11px;
+            border-radius: 7px;
+            background: #fef2f2;
+            color: #b91c1c;
+            font-size: 12px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            gap: 9px;
+            margin-top: 23px;
+        }
+
+        /* Responsive layout */
+
+        @media (max-width: 1100px) {
+            .content {
+                padding: 21px;
+            }
+
+            .summary-row {
+                grid-template-columns: repeat(2, minmax(0,1fr));
+            }
+        }
+
+        @media (max-width: 760px) {
+            .sidebar {
+                position: fixed;
+                inset: 0 auto 0 0;
+                z-index: 1500;
+                width: 270px !important;
+                min-width: 270px !important;
+                max-width: 270px !important;
+                height: 100dvh;
+                transform: translateX(-105%);
+                transition: transform .22s ease;
+                box-shadow: 10px 0 30px rgba(0,0,0,.18);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .mobile-menu,
+            .mobile-close {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .main-area {
+                width: 100% !important;
+                min-width: 0 !important;
+            }
+
+            .topbar {
+                flex-wrap: wrap;
+                padding: 12px 14px;
+            }
+
+            .content {
+                padding: 16px 12px;
+            }
+
+            .page-heading {
+                gap: 13px;
+                margin-bottom: 18px;
+            }
+
+            .page-heading h1 {
+                font-size: 25px;
+            }
+
+            .data-card {
+                padding: 12px;
+            }
+
+            .toolbar {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .search-wrap {
+                width: 100%;
+            }
+
+            .toolbar-actions {
+                justify-content: flex-start;
+            }
+
+            .form-grid {
+                grid-template-columns: minmax(0,1fr);
+            }
+
+            .field.full {
+                grid-column: auto;
+            }
+
+            .modal-backdrop {
+                align-items: flex-start;
+                padding: 10px;
+            }
+
+            .modal {
+                max-height: calc(100dvh - 20px);
+                padding: 16px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .summary-row {
+                grid-template-columns: minmax(0,1fr);
+            }
+
+            .page-heading h1 {
+                font-size: 23px;
+            }
+
+            .topbar-right {
+                gap: 7px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="app-shell">
+
+    <aside class="sidebar" id="sidebar">
+
+        <div class="brand">
+            <div class="brand-mark" aria-label="IITG Bank logo">
+                <i class="fa-solid fa-building-columns"></i>
+            </div>
+
+            <div class="brand-copy">
+                <strong>IITG <span>Bank</span></strong>
+                <small>Administration Console</small>
+            </div>
+
+            <button
+                class="icon-button mobile-close"
+                id="close-sidebar"
+                type="button"
+                aria-label="Close menu"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="nav-label">OVERVIEW</div>
+
+        <a class="dashboard-link" href="./dashboard.html">
+            <i class="fa-solid fa-gauge-high"></i>
+            <span>Dashboard</span>
+        </a>
+
+        <div class="nav-label">DATABASE MANAGEMENT</div>
+
+        <nav id="table-navigation" aria-label="Database tables">
+            <!-- admin-records.js generates all 12 table links here -->
+        </nav>
+
+        <div class="sidebar-bottom">
+            <span class="connection-dot"></span>
+            <span id="connection-label">Checking API connection…</span>
+
+            <button class="signout" id="logout-button" type="button">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                <span>Sign out</span>
+            </button>
+        </div>
+
+    </aside>
+
+    <main class="main-area">
+
+        <header class="topbar">
+
+            <div class="topbar-left">
+                <button
+                    class="icon-button mobile-menu"
+                    id="open-sidebar"
+                    type="button"
+                    aria-label="Open menu"
+                >
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
+                <div class="breadcrumbs">
+                    <span>Admin Console</span>
+                    <span>/</span>
+                    <strong id="crumb-title">Branches</strong>
+                </div>
+            </div>
+
+            <div class="topbar-right">
+                <span class="role-pill">Administrator</span>
+
+                <div class="avatar" aria-label="Administrator profile">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+            </div>
+
+        </header>
+
+        <section class="content">
+
+            <div class="page-heading">
+
+                <div>
+                    <p class="eyebrow">BANKING OPERATIONS</p>
+
+                    <h1 id="page-title">Branches</h1>
+
+                    <p id="page-description">
+                        View and manage branch records.
+                    </p>
+                </div>
+
+                <button
+                    class="primary-button"
+                    id="add-record"
+                    type="button"
+                >
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Add record</span>
+                </button>
+
+            </div>
+
+            <div class="notice" id="notice" role="status" hidden></div>
+
+            <section class="summary-row" aria-label="Database status">
+
+                <div class="summary-card">
+                    <span>Records shown</span>
+                    <strong id="record-count">—</strong>
+                    <small>Current table result</small>
+                </div>
+
+                <div class="summary-card">
+                    <span>Selected table</span>
+                    <strong id="table-name-card">branch</strong>
+                    <small>PostgreSQL table</small>
+                </div>
+
+                <div class="summary-card">
+                    <span>API status</span>
+                    <strong id="api-status">Checking</strong>
+                    <small id="api-status-detail">Waiting for backend</small>
+                </div>
+
+            </section>
+
+            <section class="data-card" aria-label="Database records">
+
+                <div class="toolbar">
+
+                    <div class="search-wrap">
+                        <span aria-hidden="true">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </span>
+
+                        <input
+                            id="search-input"
+                            type="search"
+                            placeholder="Search records…"
+                            aria-label="Search records"
+                        >
+                    </div>
+
+                    <div class="toolbar-actions">
+
+                        <button
+                            class="secondary-button"
+                            id="refresh-button"
+                            type="button"
+                        >
+                            <i class="fa-solid fa-rotate"></i>
+                            <span>Refresh</span>
+                        </button>
+
+                        <button
+                            class="secondary-button"
+                            id="clear-search"
+                            type="button"
+                        >
+                            Clear search
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <div class="table-meta">
+                    <span id="table-caption">Loading records…</span>
+                    <span id="column-caption"></span>
+                </div>
+
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead id="records-head"></thead>
+
+                        <tbody id="records-body">
+                            <tr>
+                                <td class="empty-cell">Loading records…</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-footer">
+                    <span id="footer-count">—</span>
+                    <span>Records loaded from the configured backend API.</span>
+                </div>
+
+            </section>
+
+            <p class="footnote">
+                For safety, transaction, fund transfer, loan payment, and
+                audit-log records are read-only in this interface. Apply
+                financial changes through validated backend operations.
+            </p>
+
+        </section>
+
+    </main>
+
+</div>
+
+<!-- Record editor -->
+
+<div class="modal-backdrop" id="record-modal" hidden>
+
+    <section
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+    >
+
+        <div class="modal-heading">
+
+            <div>
+                <p class="eyebrow">RECORD EDITOR</p>
+                <h2 id="modal-title">Add record</h2>
+            </div>
+
+            <button
+                class="icon-button"
+                id="close-modal"
+                type="button"
+                aria-label="Close dialog"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+        <p class="modal-help" id="modal-help">
+            Enter the fields below. The backend remains responsible for validation.
+        </p>
+
+        <form id="record-form">
+
+            <div class="form-grid" id="form-fields"></div>
+
+            <div class="form-error" id="form-error" role="alert" hidden></div>
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    id="cancel-modal"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    class="primary-button"
+                    id="save-record"
+                    type="submit"
+                >
+                    Save record
+                </button>
+
+            </div>
+
+        </form>
+
+    </section>
+
+</div>
+
+<script src="./admin-records.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const sidebar = document.getElementById("sidebar");
+
+        document.getElementById("open-sidebar")?.addEventListener("click", () => {
+            sidebar?.classList.add("open");
+        });
+
+        document.getElementById("close-sidebar")?.addEventListener("click", () => {
+            sidebar?.classList.remove("open");
+        });
+
+        document.querySelectorAll("#table-navigation a, .dashboard-link")
+            .forEach(link => {
+                link.addEventListener("click", () => {
+                    sidebar?.classList.remove("open");
+                });
+            });
+
+        document.addEventListener("keydown", event => {
+            if (event.key === "Escape") {
+                sidebar?.classList.remove("open");
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
