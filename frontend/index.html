@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IITG Bank - Secure Internet Banking Login</title>
+  <meta name="description" content="Secure, Simple, and Smart Banking portal for Customers, Employees, and Administrators.">
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome 6 Icons via CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Core Design System CSS -->
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+
+  <!-- Split Screen Layout -->
+  <div class="login-page-wrapper">
+
+    <!-- LEFT SIDE: Bank Branding & Feature Highlights -->
+    <aside class="login-brand-side">
+      <!-- Top Brand Header -->
+      <div class="brand-header-top">
+        <div class="brand-logo-icon">
+          <i class="fa-solid fa-building-columns"></i>
+        </div>
+        <div>
+          <h1 class="brand-title">IITG Bank</h1>
+          <p style="font-size: 0.8rem; color: #94A3B8;">Govt. Recognized Scheduled Commercial Bank</p>
+        </div>
+      </div>
+
+      <!-- Hero Statement -->
+      <div class="brand-hero-content">
+        <div class="brand-tagline-badge">
+          <i class="fa-solid fa-shield-halved"></i> Institutional Trust
+        </div>
+        <h2 class="brand-hero-heading">Secure. Simple.<br>Smart Banking.</h2>
+        <p class="brand-hero-sub">
+          Experience seamless financial management with real-time transfers, instant loan tracking, and institutional-grade digital security.
+        </p>
+
+        <!-- 3 Feature Highlights -->
+        <div class="feature-highlights-list">
+          <div class="feature-item">
+            <div class="feature-icon-box">
+              <i class="fa-solid fa-lock"></i>
+            </div>
+            <div class="feature-text">
+              <h4>256-Bit Bank Grade Encryption</h4>
+              <p>Your transactions and identity are safeguarded by state-of-the-art cryptographic protocols.</p>
+            </div>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-icon-box">
+              <i class="fa-solid fa-bolt"></i>
+            </div>
+            <div class="feature-text">
+              <h4>Instant RTGS, NEFT & UPI</h4>
+              <p>Lightning fast settlements 24/7 across all RBI integrated clearing networks.</p>
+            </div>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-icon-box">
+              <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <div class="feature-text">
+              <h4>Real-Time Financial Intelligence</h4>
+              <p>Clear tracking of deposits, interest rates, and loan repayments at your fingertips.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Note -->
+      <div class="brand-footer-note">
+        &copy; 2026 IITG Bank Ltd. All rights reserved. For academic DBMS demonstration.
+      </div>
+    </aside>
+
+    <!-- RIGHT SIDE: Modern Login Card -->
+    <main class="login-form-side">
+      <div class="login-card-container">
+
+        <!-- Role Selector Segmented Controls -->
+        <div class="role-tabs-wrapper" role="tablist" aria-label="Portal Selection">
+          <button type="button" class="role-tab-btn active role-customer" id="tab-customer" data-role="customer" role="tab" aria-selected="true">
+            <i class="fa-solid fa-user"></i> Customer
+          </button>
+          <button type="button" class="role-tab-btn" id="tab-employee" data-role="employee" role="tab" aria-selected="false">
+            <i class="fa-solid fa-id-badge"></i> Employee
+          </button>
+          <button type="button" class="role-tab-btn" id="tab-admin" data-role="admin" role="tab" aria-selected="false">
+            <i class="fa-solid fa-user-shield"></i> Admin
+          </button>
+        </div>
+
+        <!-- Dynamic Header based on selected role -->
+        <div class="login-header">
+          <div class="portal-badge-container">
+            <div class="portal-icon-wrapper" id="portal-icon">
+              <i class="fa-solid fa-user"></i>
+            </div>
+            <span style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: var(--text-muted);" id="portal-tag">Customer Portal</span>
+          </div>
+          <h2 class="login-title" id="login-title">Customer Login</h2>
+          <p class="login-subtitle" id="login-subtitle">Enter your digital banking credentials to continue.</p>
+        </div>
+
+        <!-- Login Form -->
+        <form id="login-form" novalidate>
+
+          <!-- Username Input -->
+          <div class="form-group">
+            <label class="form-label" for="username-input">Username or ID</label>
+            <div class="input-container">
+              <i class="fa-solid fa-user input-icon"></i>
+              <input type="text" id="username-input" class="form-input" placeholder="e.g., customer1" autocomplete="username" required>
+            </div>
+            <div class="inline-error" id="username-error">
+              <i class="fa-solid fa-circle-exclamation"></i> <span>Please enter your username.</span>
+            </div>
+          </div>
+
+          <!-- Password Input -->
+          <div class="form-group">
+            <label class="form-label" for="password-input">Password</label>
+            <div class="input-container">
+              <i class="fa-solid fa-lock input-icon"></i>
+              <input type="password" id="password-input" class="form-input" placeholder="Enter your password" autocomplete="current-password" required>
+              <button type="button" class="password-toggle-btn" id="toggle-password-btn" aria-label="Toggle password visibility">
+                <i class="fa-solid fa-eye" id="password-eye-icon"></i>
+              </button>
+            </div>
+            <div class="inline-error" id="password-error">
+              <i class="fa-solid fa-circle-exclamation"></i> <span>Please enter your password.</span>
+            </div>
+          </div>
+
+          <!-- Helper Row: Remember Me & Forgot Password -->
+          <div class="form-helper-row">
+            <label class="checkbox-label" for="remember-me">
+              <input type="checkbox" id="remember-me">
+              <span>Remember username</span>
+            </label>
+            <a href="#" class="forgot-link" data-soon="Password Recovery">Forgot password?</a>
+          </div>
+
+          <!-- Login Submit Button with Spinner -->
+          <button type="submit" class="btn-submit" id="login-submit-btn">
+            <span class="btn-text">Sign In Securely</span>
+            <span class="spinner" id="login-spinner"></span>
+            <i class="fa-solid fa-arrow-right-to-bracket" id="login-arrow-icon"></i>
+          </button>
+        </form></div>
+    </main>
+  </div>
+
+  <!-- Shared JavaScript Files (Order is important) -->
+  <script src="./js/mockData.js"></script>
+  <script src="./js/api.js"></script>
+  <script src="./js/auth.js"></script>
+  <script src="./js/ui.js"></script>
+
+  <!-- Login Page Controller Script -->
+  <script>
+    // 1. If already logged in, redirect straight to their dashboard
+    window.auth.redirectIfLoggedIn();
+
+    // 2. State variables
+    let currentRole = 'customer';
+
+    // DOM Elements
+    const roleTabs = document.querySelectorAll('.role-tab-btn');
+    const portalIcon = document.getElementById('portal-icon');
+    const portalTag = document.getElementById('portal-tag');
+    const loginTitle = document.getElementById('login-title');
+    const loginSubtitle = document.getElementById('login-subtitle');
+    const loginForm = document.getElementById('login-form');
+    const usernameInput = document.getElementById('username-input');
+    const passwordInput = document.getElementById('password-input');
+    const usernameError = document.getElementById('username-error');
+    const passwordError = document.getElementById('password-error');
+    const togglePasswordBtn = document.getElementById('toggle-password-btn');
+    const passwordEyeIcon = document.getElementById('password-eye-icon');
+    const submitBtn = document.getElementById('login-submit-btn');
+    const rememberMeCheckbox = document.getElementById('remember-me');
+
+    // 3. Load saved username from localStorage if "Remember username" was used
+    const savedUser = localStorage.getItem('bank_remembered_username');
+    if (savedUser) {
+      usernameInput.value = savedUser;
+      rememberMeCheckbox.checked = true;
+    }
+
+    // 4. Role tab switching logic
+    function setRole(role) {
+      currentRole = role;
+
+      // Update tab active classes
+      roleTabs.forEach(tab => {
+        const isMatch = tab.getAttribute('data-role') === role;
+        tab.classList.toggle('active', isMatch);
+        tab.classList.toggle(`role-${role}`, isMatch);
+        tab.setAttribute('aria-selected', isMatch);
+      });
+
+      // Update role-specific headers and icons
+      if (role === 'customer') {
+        portalIcon.innerHTML = '<i class="fa-solid fa-user"></i>';
+        portalIcon.style.color = 'var(--role-customer)';
+        portalIcon.style.backgroundColor = 'var(--role-customer-bg)';
+        portalTag.textContent = 'Customer Portal';
+        loginTitle.textContent = 'Customer Login';
+        loginSubtitle.textContent = 'Enter your digital banking credentials to manage your accounts.';
+      } else if (role === 'employee') {
+        portalIcon.innerHTML = '<i class="fa-solid fa-id-badge"></i>';
+        portalIcon.style.color = 'var(--role-employee)';
+        portalIcon.style.backgroundColor = 'var(--role-employee-bg)';
+        portalTag.textContent = 'Branch Staff Portal';
+        loginTitle.textContent = 'Employee Login';
+        loginSubtitle.textContent = 'Sign in with your branch officer ID to manage customer accounts & loans.';
+      } else if (role === 'admin') {
+        portalIcon.innerHTML = '<i class="fa-solid fa-user-shield"></i>';
+        portalIcon.style.color = 'var(--role-admin)';
+        portalIcon.style.backgroundColor = 'var(--role-admin-bg)';
+        portalTag.textContent = 'System Administration';
+        loginTitle.textContent = 'Administrator Login';
+        loginSubtitle.textContent = 'Sign in with root administrator access to oversee all branches & users.';
+      }
+
+      // Clear any validation errors on tab switch
+      clearErrors();
+    }
+
+    // Attach click listeners to role tabs
+    roleTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        setRole(tab.getAttribute('data-role'));
+      });
+    });
+
+    // 5. Password Show / Hide toggle
+    togglePasswordBtn.addEventListener('click', () => {
+      const isPassword = passwordInput.type === 'password';
+      passwordInput.type = isPassword ? 'text' : 'password';
+      passwordEyeIcon.classList.toggle('fa-eye', !isPassword);
+      passwordEyeIcon.classList.toggle('fa-eye-slash', isPassword);
+    });
+
+    // 6. Validation Helpers
+    function clearErrors() {
+      usernameError.classList.remove('show');
+      passwordError.classList.remove('show');
+      usernameInput.classList.remove('has-error');
+      passwordInput.classList.remove('has-error');
+    }
+
+    usernameInput.addEventListener('input', () => {
+      usernameError.classList.remove('show');
+      usernameInput.classList.remove('has-error');
+    });
+
+    passwordInput.addEventListener('input', () => {
+      passwordError.classList.remove('show');
+      passwordInput.classList.remove('has-error');
+    });
+
+    
+
+    // 7. Handle Form Submission
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearErrors();
+
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value;
+
+      // Check for empty fields
+      let hasError = false;
+      if (!username) {
+        usernameError.classList.add('show');
+        usernameInput.classList.add('has-error');
+        hasError = true;
+      }
+      if (!password) {
+        passwordError.classList.add('show');
+        passwordInput.classList.add('has-error');
+        hasError = true;
+      }
+
+      if (hasError) return;
+
+      // Handle "Remember username"
+      if (rememberMeCheckbox.checked) {
+        localStorage.setItem('bank_remembered_username', username);
+      } else {
+        localStorage.removeItem('bank_remembered_username');
+      }
+
+      // Enter loading state
+      submitBtn.classList.add('loading');
+      submitBtn.querySelector('.btn-text').textContent = 'Authenticating...';
+
+      try {
+        // Call auth.login() which calls api.login()
+        const result = await window.auth.login(username, password, currentRole);
+
+        if (result.success) {
+          window.ui.showToast(`Welcome back, ${result.data.DisplayName || username}!`, 'success', 2000);
+          
+          // Smooth redirection after brief toast display
+          setTimeout(() => {
+            window.location.href = window.auth.getDashboardUrlForRole(result.data.Role);
+          }, 600);
+        } else {
+          // Display error message from API (e.g. invalid, locked, disabled, role mismatch)
+          window.ui.showToast(result.message, 'error', 4500);
+          submitBtn.classList.remove('loading');
+          submitBtn.querySelector('.btn-text').textContent = 'Sign In Securely';
+        }
+      } catch (err) {
+        console.error("Login unexpected error:", err);
+        window.ui.showToast("An unexpected error occurred during login.", "error");
+        submitBtn.classList.remove('loading');
+        submitBtn.querySelector('.btn-text').textContent = 'Sign In Securely';
+      }
+    });
+  </script>
+</body>
+</html>
