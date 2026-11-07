@@ -1,0 +1,1737 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Branch Employee Portal - IITG Bank</title>
+  <meta name="description" content="Branch operations, customers, accounts, transactions and loans.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+
+  <style>
+    [hidden] { display: none !important; }
+
+    .interactive-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(11, 37, 69, .58);
+      overflow-y: auto;
+    }
+
+    .interactive-modal-panel {
+      width: min(760px, 100%);
+      max-height: 90vh;
+      overflow-y: auto;
+      background: #fff;
+      color: #0b2545;
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.2);
+    }
+
+    .interactive-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .interactive-modal-header h2 { margin: 0; font-size: 1.25rem; }
+
+    .modal-close {
+      border: 0;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      background: #f1f5f9;
+      color: #0b2545;
+    }
+
+    .modal-form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 15px;
+    }
+
+    .modal-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .modal-field.full-width { grid-column: 1 / -1; }
+
+    .modal-field label { font-size: .85rem; font-weight: 600; }
+
+    .modal-field input,
+    .modal-field select,
+    .modal-field textarea {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font: inherit;
+      color: #0b2545;
+      background: #fff;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .modal-primary, .modal-secondary {
+      border: 0;
+      border-radius: 8px;
+      padding: 11px 16px;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 600;
+    }
+
+    .modal-primary { background: #0d9488; color: white; }
+    .modal-secondary { background: #e2e8f0; color: #0b2545; }
+
+    .modal-primary:disabled { opacity: .6; cursor: wait; }
+
+    .modal-note {
+      padding: 12px;
+      border-radius: 8px;
+      background: #f1f5f9;
+      color: #475569;
+      font-size: .88rem;
+      margin-bottom: 15px;
+    }
+
+    .modal-error {
+      padding: 11px;
+      margin-top: 12px;
+      border-radius: 8px;
+      background: #fef2f2;
+      color: #b91c1c;
+      font-size: .9rem;
+    }
+
+    .directory-toolbar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .directory-toolbar input {
+      flex: 1;
+      min-width: 0;
+      padding: 10px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+    }
+
+    .directory-table-wrap { overflow-x: auto; }
+
+    .directory-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .9rem;
+    }
+
+    .directory-table th, .directory-table td {
+      text-align: left;
+      padding: 12px 10px;
+      border-bottom: 1px solid #e2e8f0;
+      white-space: nowrap;
+    }
+
+    .directory-table th {
+      background: #f8fafc;
+      color: #64748b;
+    }
+
+    .profile-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .profile-item {
+      border: 1px solid #e2e8f0;
+      border-radius: 9px;
+      padding: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .profile-item small {
+      display: block;
+      color: #64748b;
+      margin-bottom: 5px;
+    }
+
+    .profile-item strong { overflow-wrap: anywhere; }
+
+    .clickable-card { cursor: pointer; }
+    .clickable-card:focus-visible { outline: 3px solid #0d9488; }
+
+    .inline-message {
+      padding: 14px;
+      color: #64748b;
+      text-align: center;
+    }
+
+    
+    .profile-section {
+      margin: 20px 0;
+    }
+
+    .profile-section h3 {
+      margin: 0 0 14px;
+      color: #0b2545;
+      font-size: 1.05rem;
+    }
+
+    .profile-account {
+      margin-top: 14px;
+      padding: 18px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    .profile-account h4 {
+      margin: 0 0 14px;
+      color: #0b2545;
+      font-size: .95rem;
+    }
+
+    .profile-item strong {
+      display: block;
+      overflow-wrap: anywhere;
+    }
+
+
+    @media (max-width: 600px) {
+      .modal-form-grid, .profile-grid { grid-template-columns: 1fr; }
+      .directory-toolbar { flex-direction: column; }
+      .interactive-modal-panel { padding: 17px; }
+    }
+  </style>
+</head>
+
+<body>
+<div class="app-layout">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <div class="sidebar-logo" style="background:linear-gradient(135deg,#0D9488,#2DD4BF)">
+          <i class="fa-solid fa-building-columns"></i>
+        </div>
+        <div>
+          <div class="sidebar-brand-name">IITG Staff</div>
+          <div style="font-size:.7rem;color:#94A3B8">Branch Operations</div>
+        </div>
+      </div>
+      <button type="button" class="sidebar-close-btn" id="sidebar-close-btn" aria-label="Close sidebar">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-title">Branch Workspace</div>
+      <a href="#dashboard-home" class="nav-link active" data-section="dashboard-home" style="background:#0D9488">
+        <i class="fa-solid fa-gauge-high"></i><span>Dashboard</span>
+      </a>
+      <a href="#customers-section" class="nav-link" data-action="customers">
+        <i class="fa-solid fa-users"></i><span>Customers</span>
+      </a>
+      <a href="#" class="nav-link" data-action="add-customer">
+        <i class="fa-solid fa-user-plus"></i><span>Add Customer</span>
+      </a>
+      <a href="#" class="nav-link" data-action="open-account">
+        <i class="fa-solid fa-folder-plus"></i><span>Open Account</span>
+      </a>
+      <a href="#" class="nav-link" data-action="deposit">
+        <i class="fa-solid fa-cash-register"></i><span>Deposit / Withdraw</span>
+      </a>
+      <a href="#transactions-section" class="nav-link" data-section="transactions-section">
+        <i class="fa-solid fa-list-check"></i><span>Transactions</span>
+      </a>
+      <a href="#loans-section" class="nav-link" data-section="loans-section">
+        <i class="fa-solid fa-hand-holding-dollar"></i><span>Loan Applications</span>
+      </a>
+
+      <div class="nav-section-title">Audit &amp; Compliance</div>
+      <a href="#" class="nav-link" data-action="reports">
+        <i class="fa-solid fa-file-shield"></i><span>Reports</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="#" class="nav-link logout-link" id="sidebar-logout-btn">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i><span>Sign Out</span>
+      </a>
+    </div>
+  </aside>
+
+  <div class="main-wrapper">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button type="button" class="mobile-menu-btn" id="sidebar-toggle-btn" aria-label="Open menu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="topbar-greeting-box">
+          <h2 class="topbar-greeting" id="user-greeting">Welcome, Officer</h2>
+          <span class="topbar-last-login" id="branch-info-badge">
+            <i class="fa-solid fa-location-dot" style="color:#0D9488"></i>
+            Branch Operations
+          </span>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <button type="button" class="notification-bell-btn" id="alerts-btn" aria-label="View branch alerts">
+          <i class="fa-solid fa-bell"></i>
+          <span class="notification-badge" style="background:#0D9488"></span>
+        </button>
+        <span class="role-badge role-employee" id="user-role-badge">Employee</span>
+        <div class="user-profile-widget">
+          <div class="user-avatar" id="user-avatar" style="background:linear-gradient(135deg,#0D9488,#115E59)">E</div>
+          <button type="button" class="topbar-logout-btn" id="logout-btn">
+            <i class="fa-solid fa-power-off"></i><span>Logout</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="dashboard-content" id="dashboard-home">
+      <div id="loading-container" class="page-loader">
+        <div class="page-spinner" style="border-top-color:#0D9488"></div>
+        <p>Loading branch operational data and pending tasks...</p>
+      </div>
+
+      <div id="content-container" style="display:none">
+
+        <section style="margin-bottom:1.5rem">
+          <form class="search-form-row" id="customer-search-form">
+            <div class="search-input-box">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input id="customer-search-input" type="text" class="search-input"
+                     placeholder="Search customer by CIF, name or phone number..."
+                     aria-label="Customer search">
+            </div>
+            <button type="submit" class="btn-search" style="background:#0B2545">
+              <i class="fa-solid fa-magnifying-glass"></i> Search
+            </button>
+          </form>
+        </section>
+
+        <section class="metrics-grid" aria-label="Branch metrics">
+          <div class="metric-card clickable-card" role="button" tabindex="0" data-action="customers">
+            <div class="metric-icon-box metric-icon-teal"><i class="fa-solid fa-users"></i></div>
+            <div class="metric-info">
+              <span class="metric-label">Branch Customers</span>
+              <span class="metric-value" id="stat-total-customers">0</span>
+              <span class="metric-sub">Registered customers</span>
+            </div>
+          </div>
+          <div class="metric-card clickable-card" role="button" tabindex="0" data-section="customers-section">
+            <div class="metric-icon-box metric-icon-blue"><i class="fa-solid fa-book-bookmark"></i></div>
+            <div class="metric-info">
+              <span class="metric-label">Total Accounts</span>
+              <span class="metric-value" id="stat-total-accounts">0</span>
+              <span class="metric-sub">Savings, Current &amp; Salary</span>
+            </div>
+          </div>
+          <div class="metric-card clickable-card" role="button" tabindex="0" data-section="transactions-section">
+            <div class="metric-icon-box metric-icon-emerald"><i class="fa-solid fa-arrow-right-arrow-left"></i></div>
+            <div class="metric-info">
+              <span class="metric-label">Today's Transactions</span>
+              <span class="metric-value" id="stat-today-txns">0</span>
+              <span class="metric-sub">Counter and digital</span>
+            </div>
+          </div>
+          <div class="metric-card clickable-card" role="button" tabindex="0" data-section="loans-section">
+            <div class="metric-icon-box metric-icon-amber"><i class="fa-solid fa-clock"></i></div>
+            <div class="metric-info">
+              <span class="metric-label">Pending Loans</span>
+              <span class="metric-value" id="stat-pending-loans">0</span>
+              <span class="metric-sub">Awaiting branch review</span>
+            </div>
+          </div>
+        </section>
+
+        <section style="margin-bottom:2rem">
+          <div class="section-header">
+            <h3 class="section-title"><i class="fa-solid fa-bolt" style="color:#0D9488"></i> Branch Desk Quick Actions</h3>
+            <button type="button" class="btn-table-action" data-action="desk-tools">
+              All Desk Tools <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+
+          <div class="quick-actions-grid">
+            <button type="button" class="action-card-btn" data-action="add-customer">
+              <div class="action-icon-circle" style="color:#0D9488;background:#F0FDFA"><i class="fa-solid fa-user-plus"></i></div>
+              <span class="action-label">Add Customer</span>
+            </button>
+            <button type="button" class="action-card-btn" data-action="open-account">
+              <div class="action-icon-circle" style="color:#0D9488;background:#F0FDFA"><i class="fa-solid fa-folder-plus"></i></div>
+              <span class="action-label">Open Account</span>
+            </button>
+            <button type="button" class="action-card-btn" data-action="deposit">
+              <div class="action-icon-circle" style="color:#059669;background:#ECFDF5"><i class="fa-solid fa-money-bill-wave"></i></div>
+              <span class="action-label">Cash Deposit</span>
+            </button>
+            <button type="button" class="action-card-btn" data-action="withdraw">
+              <div class="action-icon-circle" style="color:#DC2626;background:#FEF2F2"><i class="fa-solid fa-arrow-up-from-bracket"></i></div>
+              <span class="action-label">Cash Withdrawal</span>
+            </button>
+            <button type="button" class="action-card-btn" data-action="new-loan">
+              <div class="action-icon-circle" style="color:#7C3AED;background:#F5F3FF"><i class="fa-solid fa-file-circle-plus"></i></div>
+              <span class="action-label">New Loan</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="card" id="loans-section">
+          <div class="card-header-row">
+            <div>
+              <h3 class="section-title" style="font-size:1.05rem">
+                <i class="fa-solid fa-hourglass-half" style="color:#D97706"></i>
+                Pending Loan Applications
+              </h3>
+              <p style="font-size:.78rem;color:var(--text-muted);margin-top:2px">
+                Applications requiring officer review
+              </p>
+            </div>
+            <span class="badge badge-warning" id="pending-loan-badge">0 Applications Pending</span>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead><tr>
+                <th>Loan ID</th><th>Customer Name</th><th>Loan Type</th>
+                <th>Principal (₹)</th><th>Interest Rate</th><th>Date Applied</th>
+                <th>Status</th><th style="text-align:right">Action</th>
+              </tr></thead>
+              <tbody id="pending-loans-tbody">
+                <tr><td colspan="8" class="inline-message">Loading loans...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card" id="transactions-section">
+          <div class="card-header-row">
+            <div>
+              <h3 class="section-title" style="font-size:1.05rem">
+                <i class="fa-solid fa-clock-rotate-left" style="color:#0D9488"></i>
+                Recent Branch Transactions
+              </h3>
+              <p style="font-size:.78rem;color:var(--text-muted);margin-top:2px">
+                Latest transaction records
+              </p>
+            </div>
+            <button type="button" class="btn-table-action" data-action="export-ledger">
+              <i class="fa-solid fa-download"></i> Export Ledger
+            </button>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead><tr>
+                <th>Txn ID</th><th>Date &amp; Time</th><th>Account No</th>
+                <th>Customer Name</th><th>Type</th><th>Channel</th>
+                <th>Amount (₹)</th><th>Status</th>
+              </tr></thead>
+              <tbody id="branch-txns-tbody">
+                <tr><td colspan="8" class="inline-message">Loading transactions...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card" id="customers-section">
+          <div class="card-header-row">
+            <div>
+              <h3 class="section-title" style="font-size:1.05rem">
+                <i class="fa-solid fa-user-check" style="color:#0D9488"></i>
+                Recently Added Customers
+              </h3>
+              <p style="font-size:.78rem;color:var(--text-muted);margin-top:2px">
+                Latest customer records returned by the dashboard API
+              </p>
+            </div>
+            <button type="button" class="btn-table-action" data-action="view-all-customers">
+              View All Customers
+            </button>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead><tr>
+                <th>CIF</th><th>Full Name</th><th>Contact Phone</th><th>PAN Card</th>
+                <th>Active Accounts</th><th>Status</th><th style="text-align:right">Action</th>
+              </tr></thead>
+              <tbody id="recent-customers-tbody">
+                <tr><td colspan="7" class="inline-message">Loading customers...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Shared modal for profiles, forms, reports and customer directory -->
+<div class="interactive-modal" id="interactive-modal" hidden>
+  <div class="interactive-modal-panel" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="interactive-modal-header">
+      <h2 id="modal-title">Branch Desk</h2>
+      <button type="button" class="modal-close" id="modal-close" aria-label="Close dialog">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<script src="../js/mockData.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/ui.js"></script>
+
+<script>
+(() => {
+  "use strict";
+
+  const $ = (selector, root = document) => root.querySelector(selector);
+  const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+
+  const currentUser = window.auth?.requireAuth?.("employee");
+
+  let dashboardData = {};
+  let allCustomers = [];
+  let lastFocusedElement = null;
+
+  const modal = $("#interactive-modal");
+  const modalTitle = $("#modal-title");
+  const modalContent = $("#modal-content");
+
+  function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;",
+      '"': "&quot;", "'": "&#039;"
+    })[char]);
+  }
+
+  function toast(message, type = "info") {
+    if (window.ui?.showToast) {
+      window.ui.showToast(message, type);
+    } else {
+      alert(message);
+    }
+  }
+
+  function currency(value) {
+    if (window.ui?.formatCurrency) return window.ui.formatCurrency(value);
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency", currency: "INR", maximumFractionDigits: 2
+    }).format(Number(value) || 0);
+  }
+
+  function dateFormat(value) {
+    if (!value) return "N/A";
+    if (window.ui?.formatDate) return window.ui.formatDate(value);
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? escapeHtml(value) : date.toLocaleDateString("en-IN");
+  }
+
+  function showModal(title, html) {
+    lastFocusedElement = document.activeElement;
+    modalTitle.textContent = title;
+    modalContent.innerHTML = html;
+    modal.hidden = false;
+    $("#modal-close").focus();
+  }
+
+  function closeModal() {
+    modal.hidden = true;
+    modalContent.innerHTML = "";
+    if (lastFocusedElement?.focus) lastFocusedElement.focus();
+  }
+
+  function openSection(id) {
+    const section = document.getElementById(id);
+    if (!section) {
+      toast("This section is not available on the page.", "error");
+      return;
+    }
+    section.scrollIntoView({ behavior: "smooth", block: "start" });
+    $("#sidebar")?.classList.remove("open");
+    $$(".sidebar-nav .nav-link").forEach(link => {
+      link.classList.toggle("active", link.dataset.section === id);
+    });
+  }
+
+  async function callApi(methodNames, ...args) {
+    if (!window.api) {
+      throw new Error("The frontend API module is not loaded.");
+    }
+
+    for (const name of methodNames) {
+      if (typeof window.api[name] === "function") {
+        const result = await window.api[name](...args);
+        if (result?.success === false) {
+          throw new Error(result.message || `${name} failed.`);
+        }
+        return result?.data ?? result;
+      }
+    }
+
+    throw new Error(
+      `API method not found: ${methodNames.join(" or ")}. ` +
+      "Add the corresponding method to frontend/js/api.js and implement its backend endpoint."
+    );
+  }
+
+  function normalizeCustomer(c) {
+    const name = c.Name ??
+      [c.First_Name ?? c.first_name, c.Last_Name ?? c.last_name]
+        .filter(Boolean).join(" ") ??
+      c.name ?? "";
+
+    return {
+      raw: c,
+      CIF: c.CIF ?? c.cif ?? c.Customer_ID ?? "",
+      Name: name || c.Full_Name || c.full_name || "Unnamed Customer",
+      Contact: c.Contact ?? c.Phone ?? c.Contact_Number ??
+        c.phone ?? c.contact_number ?? "N/A",
+      PAN: c.PAN ?? c.PAN_Card ?? c.pan ?? c.pan_card ?? "N/A",
+      Status: c.Status ?? c.status ?? "Unknown",
+      Account_Count: c.Account_Count ?? c.Active_Accounts ??
+        c.account_count ?? c.active_accounts ?? 0,
+      Email: c.Email ?? c.email ?? "N/A",
+      Address: c.Address ?? c.address ?? "N/A",
+      DOB: c.DOB ?? c.Date_of_Birth ?? c.date_of_birth ?? "N/A"
+    };
+  }
+
+  function getCustomers() {
+    const candidates = [
+      dashboardData.recentlyAddedCustomers,
+      dashboardData.customers,
+      dashboardData.customerList
+    ];
+    for (const value of candidates) {
+      if (Array.isArray(value)) return value.map(normalizeCustomer);
+    }
+    return [];
+  }
+
+  function statusBadge(status) {
+    if (window.ui?.getStatusBadge) return window.ui.getStatusBadge(status);
+    return `<span class="badge badge-neutral">${escapeHtml(status || "Unknown")}</span>`;
+  }
+
+  function renderCustomers(customers = allCustomers) {
+    const tbody = $("#recent-customers-tbody");
+    if (!tbody) return;
+
+    if (!customers.length) {
+      tbody.innerHTML = `<tr><td colspan="7" class="inline-message">
+        No customer records were returned by the API.
+      </td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = customers.slice(0, 10).map(c => `
+      <tr>
+        <td><code>${escapeHtml(c.CIF)}</code></td>
+        <td style="font-weight:600">${escapeHtml(c.Name)}</td>
+        <td>${escapeHtml(c.Contact)}</td>
+        <td><code>${escapeHtml(c.PAN)}</code></td>
+        <td><span class="badge badge-neutral">${escapeHtml(c.Account_Count)} Account(s)</span></td>
+        <td>${statusBadge(c.Status)}</td>
+        <td style="text-align:right">
+          <button type="button" class="btn-table-action"
+            data-view-profile="${escapeHtml(c.CIF)}">
+            <i class="fa-solid fa-eye"></i> View Profile
+          </button>
+        </td>
+      </tr>
+    `).join("");
+  }
+
+  function renderCustomerDirectory(customers = allCustomers, query = "") {
+    const filtered = customers.filter(c => {
+      const haystack = [
+        c.CIF, c.Name, c.Contact, c.PAN, c.Email, c.Status
+      ].join(" ").toLowerCase();
+      return haystack.includes(query.trim().toLowerCase());
+    });
+
+    const target = $("#directory-results", modalContent);
+    if (!target) return;
+
+    target.innerHTML = filtered.length ? filtered.map(c => `
+      <tr>
+        <td>${escapeHtml(c.CIF)}</td>
+        <td>${escapeHtml(c.Name)}</td>
+        <td>${escapeHtml(c.Contact)}</td>
+        <td>${escapeHtml(c.Status)}</td>
+        <td>
+          <button type="button" class="btn-table-action"
+            data-directory-profile="${escapeHtml(c.CIF)}">View Profile</button>
+        </td>
+      </tr>
+    `).join("") : `<tr><td colspan="5" class="inline-message">No matching customers found.</td></tr>`;
+  }
+
+  async function openCustomerDirectory() {
+    showModal("Customer Directory", `
+      <div class="modal-note" id="directory-note">
+        Loading the complete customer list from the API...
+      </div>
+      <div class="directory-toolbar">
+        <input type="search" id="directory-search" placeholder="Search by CIF, name, phone or status">
+        <button type="button" class="modal-secondary" id="directory-clear">Clear</button>
+      </div>
+      <div class="directory-table-wrap">
+        <table class="directory-table">
+          <thead><tr>
+            <th>CIF</th><th>Name</th><th>Phone</th><th>Status</th><th>Action</th>
+          </tr></thead>
+          <tbody id="directory-results">
+            <tr><td colspan="5" class="inline-message">Loading customers...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="modal-secondary" data-close-modal>Close</button>
+      </div>
+    `);
+
+    $("#directory-search").addEventListener("input", event => {
+      renderCustomerDirectory(allCustomers, event.target.value);
+    });
+
+    $("#directory-clear").addEventListener("click", () => {
+      $("#directory-search").value = "";
+      renderCustomerDirectory(allCustomers);
+    });
+
+    try {
+      // api.js must expose one of these methods and it must call an
+      // authenticated backend endpoint that returns the complete list.
+      const result = await callApi([
+        "getAllCustomers",
+        "getCustomerDirectory",
+        "getCustomers"
+      ]);
+
+      const list = Array.isArray(result)
+        ? result
+        : Array.isArray(result?.customers)
+          ? result.customers
+          : Array.isArray(result?.data)
+            ? result.data
+            : null;
+
+      if (!list) {
+        throw new Error(
+          "The customer-list endpoint did not return an array. " +
+          "Check the response format in frontend/js/api.js."
+        );
+      }
+
+      allCustomers = list.map(normalizeCustomer);
+      renderCustomerDirectory(allCustomers, $("#directory-search").value);
+
+      $("#directory-note").textContent =
+        `Loaded ${allCustomers.length} customer record(s) from the customer-list API.`;
+    } catch (error) {
+      console.error("Could not load complete customer directory:", error);
+
+      // Fall back to customers already loaded in dashboard data, but make
+      // it clear that this may not be the full database.
+      renderCustomerDirectory(allCustomers, $("#directory-search").value);
+
+      $("#directory-note").textContent =
+        `Could not fetch the complete customer list: ${error.message} ` +
+        `Showing ${allCustomers.length} customer record(s) already available in dashboard data. ` +
+        `Add an authenticated getAllCustomers/getCustomerDirectory method in frontend/js/api.js ` +
+        `and a matching backend endpoint to retrieve every authorized customer.`;
+    }
+  }
+
+
+async function openCustomerProfile(cif) {
+  showModal(
+    "Customer Profile",
+    '<div class="inline-message">Loading complete customer profile...</div>'
+  );
+
+  try {
+    const data = await callApi(
+      ["getCustomerProfileByCif"],
+      cif
+    );
+
+    const customer = data?.customer;
+    const accounts = Array.isArray(data?.accounts)
+      ? data.accounts
+      : [];
+
+    if (!customer) {
+      throw new Error("Customer details were not returned by the backend.");
+    }
+
+    const fullName = [
+      customer.first_name,
+      customer.last_name
+    ].filter(Boolean).join(" ");
+
+    const field = (label, value) => `
+      <div class="profile-item">
+        <small>${escapeHtml(label)}</small>
+        <strong>${escapeHtml(
+          value === null || value === undefined || value === ""
+            ? "N/A"
+            : value
+        )}</strong>
+      </div>
+    `;
+
+    const accountCards = accounts.length
+      ? accounts.map(account => `
+          <section class="profile-account">
+            <h4>Account ${escapeHtml(account.account_no)}</h4>
+            <div class="profile-grid">
+              ${field("Account Number", account.account_no)}
+              ${field(
+                "Account Type",
+                account.account_type_name || account.account_type_id
+              )}
+              ${field("Branch IFSC", account.ifsc)}
+              ${field("Nominee", account.nominee)}
+              ${field(
+                "Opening Date",
+                account.opening_date
+                  ? dateFormat(account.opening_date)
+                  : "N/A"
+              )}
+              ${field("Account Status", account.status)}
+              ${field(
+                "Current Balance",
+                currency(account.current_balance)
+              )}
+            </div>
+          </section>
+        `).join("")
+      : '<div class="inline-message">No accessible accounts found for this customer.</div>';
+
+    showModal(
+      `Customer Profile — ${fullName || customer.cif}`,
+      `
+        <section class="profile-section">
+          <h3>Personal Information</h3>
+
+          <div class="profile-grid">
+            ${field("Customer CIF", customer.cif)}
+            ${field("First Name", customer.first_name)}
+            ${field("Last Name", customer.last_name)}
+            ${field(
+              "Date of Birth",
+              customer.dob ? dateFormat(customer.dob) : "N/A"
+            )}
+            ${field("Gender", customer.gender)}
+            ${field("Contact Number", customer.contact)}
+            ${field("PAN", customer.pan)}
+            ${field(
+              "Aadhaar Number",
+              customer.aadhar_no
+                ? "XXXX XXXX " + String(customer.aadhar_no).slice(-4)
+                : "N/A"
+            )}
+            ${field("Address", customer.address)}
+            ${field("Customer Status", customer.status)}
+          </div>
+        </section>
+
+        <section class="profile-section">
+          <h3>Bank Accounts (${accounts.length})</h3>
+          ${accountCards}
+        </section>
+
+        <div class="modal-actions">
+          <button type="button" class="modal-secondary" data-close-modal>
+            Close
+          </button>
+        </div>
+      `
+    );
+
+  } catch (error) {
+    console.error("Customer profile loading failed:", error);
+
+    showModal(
+      "Customer Profile",
+      `
+        <div class="modal-error">
+          ${escapeHtml(
+            error.message || "Unable to load the customer profile."
+          )}
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="modal-secondary" data-close-modal>
+            Close
+          </button>
+        </div>
+      `
+    );
+  }
+}
+
+
+function showForm(title, fields, methodNames, transform = values => values) {
+  const formHtml = fields.map(field => {
+    const required = field.required === false ? "" : "required";
+    const full = field.full ? "full-width" : "";
+    const name = escapeHtml(field.name);
+    let control;
+
+    if (field.type === "select") {
+      control = `
+        <select name="${name}" ${required}>
+          <option value="">Select ${escapeHtml(field.label)}</option>
+          ${(field.options || []).map(option => `
+            <option value="${escapeHtml(option.value)}">
+              ${escapeHtml(option.label)}
+            </option>
+          `).join("")}
+        </select>`;
+    } else if (field.type === "textarea") {
+      control = `
+        <textarea name="${name}" rows="3" ${required}
+          placeholder="${escapeHtml(field.placeholder || "")}">${escapeHtml(field.value || "")}</textarea>`;
+    } else {
+      control = `
+        <input
+          name="${name}"
+          type="${escapeHtml(field.type || "text")}"
+          value="${escapeHtml(field.value ?? "")}"
+          ${field.min !== undefined ? `min="${escapeHtml(field.min)}"` : ""}
+          ${field.max !== undefined ? `max="${escapeHtml(field.max)}"` : ""}
+          ${field.step ? `step="${escapeHtml(field.step)}"` : ""}
+          ${field.readonly ? "readonly" : ""}
+          ${field.readonly ? 'aria-readonly="true"' : ""}
+          placeholder="${escapeHtml(field.placeholder || "")}"
+          ${required}
+        >`;
+    }
+
+    return `
+      <div class="modal-field ${full}">
+        <label for="field-${name}">${escapeHtml(field.label)}</label>
+        ${control.replace(
+          `name="${name}"`,
+          `name="${name}" id="field-${name}"`
+        )}
+      </div>`;
+  }).join("");
+
+  showModal(title, `
+    <div class="modal-note">
+      Available options are loaded from the database. The backend validates
+      your permissions and the submitted details.
+    </div>
+
+    <form id="action-form">
+      <div class="modal-form-grid">${formHtml}</div>
+
+      <div id="form-error" class="modal-error" hidden></div>
+
+      <div class="modal-actions">
+        <button type="button" class="modal-secondary" data-close-modal>
+          Cancel
+        </button>
+        <button type="submit" class="modal-primary">Submit</button>
+      </div>
+    </form>
+  `);
+
+  $("#action-form").addEventListener("submit", async event => {
+    event.preventDefault();
+
+    const form = event.currentTarget;
+    const button = $('button[type="submit"]', form);
+    const errorBox = $("#form-error", form);
+    const values = Object.fromEntries(new FormData(form).entries());
+
+    button.disabled = true;
+    button.textContent = "Submitting...";
+    errorBox.hidden = true;
+
+    try {
+      const payload = transform(values);
+      await callApi(methodNames, payload);
+
+      closeModal();
+      toast(`${title} submitted successfully.`, "success");
+      await loadDashboard();
+    } catch (error) {
+      errorBox.textContent = error.message || "Request failed.";
+      errorBox.hidden = false;
+      button.disabled = false;
+      button.textContent = "Submit";
+    }
+  });
+}
+
+
+  
+function addCustomerForm() {
+  showForm(
+    "Add Customer",
+    [
+      { name: "first_name", label: "First Name" },
+      { name: "last_name", label: "Last Name" },
+      { name: "date_of_birth", label: "Date of Birth", type: "date" },
+      {
+        name: "gender",
+        label: "Gender",
+        type: "select",
+        options: [
+          { value: "Male", label: "Male" },
+          { value: "Female", label: "Female" },
+          { value: "Other", label: "Other" }
+        ]
+      },
+      { name: "phone", label: "Contact Number", type: "tel" },
+      { name: "pan", label: "PAN Card" },
+      {
+        name: "aadhar_no",
+        label: "Aadhaar Number",
+        placeholder: "12-digit Aadhaar number"
+      },
+      {
+        name: "address",
+        label: "Address",
+        type: "textarea",
+        full: true,
+        required: false
+      }
+    ],
+    ["createCustomer"],
+    values => ({
+      ...values,
+      dob: values.date_of_birth,
+      contact: values.phone,
+      pan: values.pan.trim().toUpperCase()
+    })
+  );
+}
+
+
+
+
+async function openAccountForm() {
+  try {
+    const accountTypes = await callApi(["getAccountTypes"]);
+
+    if (!Array.isArray(accountTypes) || accountTypes.length === 0) {
+      throw new Error(
+        "No account types are available. Check the ACCOUNT_TYPE table."
+      );
+    }
+
+    const branchIFSC =
+      dashboardData.branch?.IFSC ||
+      dashboardData.employee?.IFSC ||
+      currentUser?.IFSC ||
+      currentUser?.ifsc ||
+      "";
+
+    if (!branchIFSC) {
+      throw new Error(
+        "Your assigned branch IFSC could not be loaded. Refresh the dashboard and sign in again."
+      );
+    }
+
+    showForm(
+      "Open Account",
+      [
+        {
+          name: "cif",
+          label: "Customer CIF",
+          placeholder: "Enter the existing customer's CIF"
+        },
+        {
+          name: "account_type_id",
+          label: "Account Type",
+          type: "select",
+          options: accountTypes.map(type => ({
+            value: type.account_type_id ?? type.Account_Type_ID,
+            label: [
+              type.type_name ?? type.Type_Name ??
+                type.account_type_id ?? type.Account_Type_ID,
+              `Minimum balance: ${currency(
+                type.minimum_balance ?? type.Minimum_Balance ?? 0
+              )}`,
+              `Interest: ${type.interest_rate ?? type.Interest_Rate ?? 0}%`
+            ].join(" — ")
+          }))
+        },
+        {
+          name: "ifsc",
+          label: "Assigned Branch IFSC",
+          value: branchIFSC,
+          readonly: true
+        },
+        {
+          name: "nominee",
+          label: "Nominee Name",
+          required: false
+        },
+        {
+          name: "initial_balance",
+          label: "Initial Deposit (₹)",
+          type: "number",
+          min: "0.01",
+          step: "0.01"
+        }
+      ],
+      ["openAccount"],
+      values => ({
+        cif: values.cif.trim(),
+        account_type_id: values.account_type_id,
+        ifsc: branchIFSC,
+        nominee: values.nominee.trim() || null,
+        initial_balance: Number(values.initial_balance)
+      })
+    );
+  } catch (error) {
+    console.error("Could not prepare account form:", error);
+    toast(error.message || "Could not load account types.", "error");
+  }
+}
+
+
+
+
+function transactionForm(kind) {
+  const isDeposit = kind === "Deposit";
+
+  showForm(
+    isDeposit ? "Cash Deposit" : "Cash Withdrawal",
+    [
+      { name: "account_no", label: "Account Number" },
+      {
+        name: "amount",
+        label: "Amount (₹)",
+        type: "number",
+        min: "0.01",
+        step: "0.01"
+      }
+    ],
+    isDeposit ? ["staffDeposit"] : ["staffWithdrawal"],
+    values => ({
+      account_no: values.account_no.trim(),
+      amount: Number(values.amount)
+    })
+  );
+}
+
+
+async function newLoanForm() {
+  try {
+    const loanTypes = await callApi(["getLoanTypes"]);
+
+    if (!Array.isArray(loanTypes) || loanTypes.length === 0) {
+      throw new Error(
+        "No loan types are available. Check the LOAN_TYPE table."
+      );
+    }
+
+    showForm(
+      "New Loan Application",
+      [
+        {
+          name: "cif",
+          label: "Customer CIF",
+          placeholder: "Enter the customer's CIF"
+        },
+        {
+          name: "account_no",
+          label: "Linked Account Number",
+          placeholder: "Enter an account belonging to this customer"
+        },
+        {
+          name: "loan_type_id",
+          label: "Loan Type",
+          type: "select",
+          options: loanTypes.map(type => ({
+            value: type.loan_type_id ?? type.Loan_Type_ID,
+            label: [
+              type.loan_type_name ?? type.Loan_Type_Name ??
+                type.loan_type_id ?? type.Loan_Type_ID,
+              `Interest: ${type.interest_rate ?? type.Interest_Rate ?? 0}%`,
+              `Maximum: ${currency(
+                type.max_amount ?? type.Max_Amount ?? 0
+              )}`
+            ].join(" — ")
+          }))
+        },
+        {
+          name: "principal",
+          label: "Principal Amount (₹)",
+          type: "number",
+          min: "0.01",
+          step: "0.01"
+        },
+        {
+          name: "tenure_months",
+          label: "Tenure (months)",
+          type: "number",
+          min: "1",
+          max: "480"
+        }
+      ],
+      ["createStaffLoan"],
+      values => ({
+        cif: values.cif.trim(),
+        account_no: values.account_no.trim(),
+        loan_type_id: values.loan_type_id,
+        principal: Number(values.principal),
+        tenure_months: Number(values.tenure_months)
+      })
+    );
+  } catch (error) {
+    console.error("Could not prepare loan form:", error);
+    toast(error.message || "Could not load loan types.", "error");
+  }
+}
+
+
+
+  async function reviewLoan(loan, decision) {
+    const accepted = confirm(
+      `${decision} loan ${loan.Loan_ID} for ${loan.Customer_Name || "this customer"}?`
+    );
+    if (!accepted) return;
+
+    try {
+      const methods = decision === "Approve"
+        ? ["approveLoan", "approveLoanApplication"]
+        : ["rejectLoan", "rejectLoanApplication"];
+
+      await callApi(methods, loan.Loan_ID);
+      toast(`Loan ${loan.Loan_ID} ${decision.toLowerCase()}d.`, "success");
+      await loadDashboard();
+    } catch (error) {
+      toast(error.message, "error");
+    }
+  }
+
+  function renderLoans(loans = []) {
+    const tbody = $("#pending-loans-tbody");
+    if (!tbody) return;
+
+    if (!loans.length) {
+      tbody.innerHTML = `<tr><td colspan="8" class="inline-message">No pending loan applications returned by the API.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = loans.map(loan => {
+      const id = escapeHtml(loan.Loan_ID);
+      return `<tr>
+        <td><strong>${id}</strong></td>
+        <td><div style="font-weight:600">${escapeHtml(loan.Customer_Name)}</div>
+            <div style="font-size:.72rem;color:var(--text-muted)">CIF: ${escapeHtml(loan.CIF)}</div></td>
+        <td><span class="badge badge-neutral">${escapeHtml(loan.Loan_Type_Name)}</span></td>
+        <td style="font-weight:600">${currency(loan.Principal_Amount)}</td>
+        <td>${escapeHtml(loan.Interest_Rate)}% p.a. (${escapeHtml(loan.Tenure_Months)} mos)</td>
+        <td>${dateFormat(loan.Date_Applied)}</td>
+        <td>${statusBadge(loan.Loan_Status || loan.Status || "Pending Review")}</td>
+        <td style="text-align:right">
+          <div style="display:inline-flex;gap:.35rem">
+            <button type="button" class="btn-table-action btn-table-success"
+              data-loan-approve="${id}"><i class="fa-solid fa-check"></i> Approve</button>
+            <button type="button" class="btn-table-action btn-table-danger"
+              data-loan-reject="${id}"><i class="fa-solid fa-xmark"></i> Reject</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join("");
+  }
+
+  function renderTransactions(transactions = []) {
+    const tbody = $("#branch-txns-tbody");
+    if (!tbody) return;
+
+    if (!transactions.length) {
+      tbody.innerHTML = `<tr><td colspan="8" class="inline-message">No recent transactions returned by the API.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = transactions.map(tx => {
+      const type = String(tx.Transaction_Type || tx.Type || "");
+      const credit = ["Deposit", "Transfer_In", "Credit"].includes(type);
+      return `<tr>
+        <td><code>${escapeHtml(tx.Transaction_ID)}</code></td>
+        <td>${dateFormat(tx.Transaction_Date_Time || tx.Date)}</td>
+        <td><code>${escapeHtml(window.ui?.maskAccountNumber
+          ? window.ui.maskAccountNumber(tx.Account_No) : tx.Account_No)}</code></td>
+        <td>${escapeHtml(tx.Customer_Name)}</td>
+        <td>${escapeHtml(type)}</td>
+        <td><span class="badge badge-neutral">${escapeHtml(tx.Channel)}</span></td>
+        <td class="${credit ? "amount-credit" : "amount-debit"}">${credit ? "+ " : "- "}${currency(tx.Amount)}</td>
+        <td>${statusBadge(tx.Status)}</td>
+      </tr>`;
+    }).join("");
+  }
+
+  function exportLedger() {
+    const rows = [
+      ["Transaction ID", "Date", "Account", "Customer", "Type", "Channel", "Amount", "Status"],
+      ...(dashboardData.recentBranchTransactions || []).map(tx => [
+        tx.Transaction_ID, tx.Transaction_Date_Time, tx.Account_No,
+        tx.Customer_Name, tx.Transaction_Type, tx.Channel, tx.Amount, tx.Status
+      ])
+    ];
+
+    if (rows.length === 1) {
+      toast("No transaction data is available to export.", "info");
+      return;
+    }
+
+    const csv = rows.map(row => row.map(value => {
+      const safe = String(value ?? "").replace(/"/g, '""');
+      return `"${safe}"`;
+    }).join(",")).join("\r\n");
+
+    const blob = new Blob(["\uFEFF" + csv], {type:"text/csv;charset=utf-8;"});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "branch-transactions.csv";
+    link.click();
+    URL.revokeObjectURL(url);
+    toast("Transaction ledger exported.", "success");
+  }
+
+  function showReports() {
+    const stats = dashboardData.stats || {};
+    showModal("Branch Reports", `
+      <div class="profile-grid">
+        <div class="profile-item"><small>Customers</small><strong>${escapeHtml(stats.totalCustomers ?? 0)}</strong></div>
+        <div class="profile-item"><small>Accounts</small><strong>${escapeHtml(stats.totalAccounts ?? 0)}</strong></div>
+        <div class="profile-item"><small>Today's Transactions</small><strong>${escapeHtml(stats.todayTransactions ?? 0)}</strong></div>
+        <div class="profile-item"><small>Pending Loans</small><strong>${escapeHtml(stats.pendingLoans ?? 0)}</strong></div>
+      </div>
+      <div class="modal-note" style="margin-top:15px">
+        These are dashboard summary figures, not a complete audit report. Detailed reports require a backend reporting endpoint.
+      </div>
+      <div class="modal-actions"><button class="modal-secondary" data-close-modal>Close</button></div>
+    `);
+  }
+
+  function showDeskTools() {
+    showModal("Branch Desk Tools", `
+      <div class="modal-form-grid">
+        <button class="modal-secondary" data-action="add-customer">Add Customer</button>
+        <button class="modal-secondary" data-action="open-account">Open Account</button>
+        <button class="modal-secondary" data-action="deposit">Cash Deposit</button>
+        <button class="modal-secondary" data-action="withdraw">Cash Withdrawal</button>
+        <button class="modal-secondary" data-action="new-loan">New Loan</button>
+        <button class="modal-secondary" data-action="view-all-customers">Customer Directory</button>
+        <button class="modal-secondary" data-action="export-ledger">Export Ledger</button>
+      </div>
+    `);
+  }
+
+  async function performAction(action) {
+    switch (action) {
+      case "customers":
+      case "view-all-customers":
+        openCustomerDirectory();
+        break;
+      case "add-customer":
+        addCustomerForm();
+        break;
+      case "open-account":
+        openAccountForm();
+        break;
+      case "deposit":
+        transactionForm("Deposit");
+        break;
+      case "withdraw":
+        transactionForm("Withdrawal");
+        break;
+      case "new-loan":
+        newLoanForm();
+        break;
+      case "export-ledger":
+        exportLedger();
+        break;
+      case "reports":
+        showReports();
+        break;
+      case "desk-tools":
+        showDeskTools();
+        break;
+      case "alerts":
+        showModal("Branch Alerts", `
+          <div class="modal-note">The dashboard does not currently provide a dedicated alerts feed.</div>
+          <div class="modal-actions"><button class="modal-secondary" data-close-modal>Close</button></div>
+        `);
+        break;
+      default:
+        toast("This action is not available.", "info");
+    }
+  }
+
+  async function loadDashboard() {
+    const loading = $("#loading-container");
+    const content = $("#content-container");
+
+    try {
+      if (!currentUser) return;
+
+      const response = await callApi(
+        ["getEmployeeDashboardData"],
+        currentUser.Employee_ID
+      );
+
+      dashboardData = response || {};
+      if (response?.data && !response.stats) dashboardData = response.data;
+
+      const stats = dashboardData.stats || {};
+      $("#stat-total-customers").textContent = stats.totalCustomers ?? 0;
+      $("#stat-total-accounts").textContent = stats.totalAccounts ?? 0;
+      $("#stat-today-txns").textContent = stats.todayTransactions ?? 0;
+      $("#stat-pending-loans").textContent = stats.pendingLoans ?? 0;
+
+      const loans = dashboardData.pendingLoanApplications || [];
+      $("#pending-loan-badge").textContent = `${loans.length} Application(s) Pending`;
+
+      allCustomers = getCustomers();
+
+      renderLoans(loans);
+      renderTransactions(dashboardData.recentBranchTransactions || []);
+      renderCustomers(allCustomers);
+
+      loading.style.display = "none";
+      content.style.display = "block";
+    } catch (error) {
+      console.error("Dashboard load failed:", error);
+      loading.style.display = "none";
+      content.style.display = "block";
+      toast(error.message || "Could not load dashboard data.", "error");
+    }
+  }
+
+  function logout() {
+    if (window.auth?.logout) {
+      window.auth.logout();
+    } else {
+      toast("Logout function is missing from frontend/js/auth.js.", "error");
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    if (!currentUser) return;
+
+    if (window.ui?.initTopBar) window.ui.initTopBar(currentUser);
+
+    const branchBadge = $("#branch-info-badge");
+    if (branchBadge && (currentUser.BranchName || currentUser.IFSC)) {
+      branchBadge.textContent =
+        `${currentUser.BranchName || "Branch"}${currentUser.IFSC ? " (" + currentUser.IFSC + ")" : ""}`;
+    }
+
+    $("#sidebar-logout-btn")?.addEventListener("click", event => {
+      event.preventDefault();
+      logout();
+    });
+
+    $("#logout-btn")?.addEventListener("click", logout);
+
+    $("#sidebar-toggle-btn")?.addEventListener("click", () => {
+      $("#sidebar")?.classList.toggle("open");
+    });
+
+    $("#sidebar-close-btn")?.addEventListener("click", () => {
+      $("#sidebar")?.classList.remove("open");
+    });
+
+    $("#alerts-btn")?.addEventListener("click", () => performAction("alerts"));
+
+    $("#customer-search-form")?.addEventListener("submit", event => {
+      event.preventDefault();
+      const query = $("#customer-search-input").value.trim();
+
+      const matches = allCustomers.filter(c =>
+        [c.CIF, c.Name, c.Contact, c.PAN]
+          .join(" ").toLowerCase().includes(query.toLowerCase())
+      );
+
+      openCustomerDirectory();
+      $("#directory-search").value = query;
+      renderCustomerDirectory(allCustomers, query);
+
+      if (query && !matches.length) {
+        toast("No matching customer was found in the loaded records.", "info");
+      }
+    });
+
+    document.addEventListener("click", async event => {
+      const actionElement = event.target.closest("[data-action]");
+      if (actionElement) {
+        event.preventDefault();
+        await performAction(actionElement.dataset.action);
+        return;
+      }
+
+      const sectionElement = event.target.closest("[data-section]");
+      if (sectionElement) {
+        event.preventDefault();
+        openSection(sectionElement.dataset.section);
+        $("#sidebar")?.classList.remove("open");
+        return;
+      }
+
+      const profileButton = event.target.closest("[data-view-profile]");
+      if (profileButton) {
+        openCustomerProfile(profileButton.dataset.viewProfile);
+        return;
+      }
+
+      const directoryProfileButton = event.target.closest("[data-directory-profile]");
+      if (directoryProfileButton) {
+        openCustomerProfile(directoryProfileButton.dataset.directoryProfile);
+        return;
+      }
+
+      const approveButton = event.target.closest("[data-loan-approve]");
+      if (approveButton) {
+        const loan = (dashboardData.pendingLoanApplications || [])
+          .find(item => String(item.Loan_ID) === approveButton.dataset.loanApprove);
+        if (loan) await reviewLoan(loan, "Approve");
+        return;
+      }
+
+      const rejectButton = event.target.closest("[data-loan-reject]");
+      if (rejectButton) {
+        const loan = (dashboardData.pendingLoanApplications || [])
+          .find(item => String(item.Loan_ID) === rejectButton.dataset.loanReject);
+        if (loan) await reviewLoan(loan, "Reject");
+        return;
+      }
+
+      if (event.target.closest("[data-close-modal]")) {
+        closeModal();
+      }
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && !modal.hidden) closeModal();
+
+      const focusedCard = event.target.closest(".clickable-card");
+      if (focusedCard && (event.key === "Enter" || event.key === " ")) {
+        event.preventDefault();
+        if (focusedCard.dataset.action) performAction(focusedCard.dataset.action);
+        if (focusedCard.dataset.section) openSection(focusedCard.dataset.section);
+      }
+    });
+
+    $("#modal-close").addEventListener("click", closeModal);
+
+    modal.addEventListener("click", event => {
+      if (event.target === modal) closeModal();
+    });
+
+    await loadDashboard();
+  });
+})();
+</script>
+
+<script>
+/*
+ * IITG Bank Employee Dashboard — sortable tables
+ * Adds ascending/descending sorting to every data column in
+ * dashboard tables and the customer directory modal.
+ */
+(() => {
+  "use strict";
+
+  const SORT_BUTTON_CLASS = "employee-column-sort";
+  const sortState = new WeakMap();
+
+  function cellValue(row, index) {
+    const cell = row.cells[index];
+    return cell ? cell.textContent.trim() : "";
+  }
+
+  function compareCellValues(a, b, heading) {
+    const emptyA = a === "";
+    const emptyB = b === "";
+
+    if (emptyA && emptyB) return 0;
+    if (emptyA) return 1;
+    if (emptyB) return -1;
+
+    const headingText = (heading || "").toLowerCase();
+
+    if (/date|time|dob|applied|created|updated/.test(headingText)) {
+      const dateA = Date.parse(a);
+      const dateB = Date.parse(b);
+
+      if (Number.isFinite(dateA) && Number.isFinite(dateB)) {
+        return dateA - dateB;
+      }
+    }
+
+    const normalizedA = a.replace(/[₹,\s]/g, "").replace(/%$/, "");
+    const normalizedB = b.replace(/[₹,\s]/g, "").replace(/%$/, "");
+
+    if (
+      normalizedA !== "" &&
+      normalizedB !== "" &&
+      Number.isFinite(Number(normalizedA)) &&
+      Number.isFinite(Number(normalizedB))
+    ) {
+      return Number(normalizedA) - Number(normalizedB);
+    }
+
+    return a.localeCompare(b, undefined, {
+      numeric: true,
+      sensitivity: "base"
+    });
+  }
+
+  function sortTable(table, columnIndex, heading, direction) {
+    const tbody = table.tBodies[0];
+    if (!tbody) return;
+
+    const rows = Array.from(tbody.rows);
+    const sortableRows = rows.filter(row =>
+      !(row.cells.length === 1 && row.cells[0].hasAttribute("colspan"))
+    );
+
+    sortableRows.sort((rowA, rowB) => {
+      const result = compareCellValues(
+        cellValue(rowA, columnIndex),
+        cellValue(rowB, columnIndex),
+        heading
+      );
+
+      return direction === "asc" ? result : -result;
+    });
+
+    // Keep placeholder/empty-state rows at the bottom.
+    const placeholders = rows.filter(row => !sortableRows.includes(row));
+    [...sortableRows, ...placeholders].forEach(row => tbody.appendChild(row));
+  }
+
+  function enhanceTable(table) {
+    if (!table || !table.tHead || !table.tBodies.length) return;
+
+    Array.from(table.tHead.rows).forEach(headerRow => {
+      Array.from(headerRow.cells).forEach((th, columnIndex) => {
+        // Action buttons are not meaningful sort values.
+        if (/^actions?$/i.test(th.textContent.trim())) return;
+
+        let button = th.querySelector("." + SORT_BUTTON_CLASS);
+
+        if (!button) {
+          const originalLabel = th.textContent.trim();
+          if (!originalLabel) return;
+
+          button = document.createElement("button");
+          button.type = "button";
+          button.className = SORT_BUTTON_CLASS;
+          button.style.cssText =
+            "display:inline-flex;align-items:center;gap:6px;" +
+            "border:0;background:transparent;color:inherit;font:inherit;" +
+            "font-weight:inherit;text-align:left;cursor:pointer;padding:0;" +
+            "white-space:nowrap;";
+          button.dataset.sortLabel = originalLabel;
+          button.innerHTML =
+            `<span>${originalLabel}</span><span aria-hidden="true">↕</span>`;
+
+          th.textContent = "";
+          th.appendChild(button);
+        }
+
+        // Avoid registering duplicate listeners after re-renders.
+        if (button.dataset.sortBound === "true") return;
+        button.dataset.sortBound = "true";
+
+        button.addEventListener("click", () => {
+          const previous = sortState.get(table);
+          const label = button.dataset.sortLabel || button.textContent.trim();
+
+          let direction = "asc";
+          if (previous && previous.columnIndex === columnIndex) {
+            direction = previous.direction === "asc" ? "desc" : "asc";
+          }
+
+          sortState.set(table, { columnIndex, direction });
+          sortTable(table, columnIndex, label, direction);
+
+          table.querySelectorAll("." + SORT_BUTTON_CLASS).forEach(item => {
+            const arrow = item.querySelector("span[aria-hidden='true']");
+            if (!arrow) return;
+
+            if (item === button) {
+              arrow.textContent = direction === "asc" ? "▲" : "▼";
+              item.setAttribute(
+                "aria-label",
+                `Sort ${label} ${direction === "asc" ? "ascending" : "descending"}`
+              );
+            } else {
+              arrow.textContent = "↕";
+              item.setAttribute(
+                "aria-label",
+                `Sort ${item.dataset.sortLabel || item.textContent.trim()}`
+              );
+            }
+          });
+        });
+      });
+    });
+  }
+
+  function enhanceAllTables() {
+    document.querySelectorAll(
+      ".data-table, .directory-table, #interactive-modal table"
+    ).forEach(enhanceTable);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", enhanceAllTables);
+  } else {
+    enhanceAllTables();
+  }
+
+  // The dashboard redraws table rows and modal content after API calls.
+  // Observe those changes so newly rendered tables also get sorting.
+  const observer = new MutationObserver(() => enhanceAllTables());
+  observer.observe(document.body, { childList: true, subtree: true });
+})();
+</script>
+
+</body>
+</html>
